@@ -110,6 +110,7 @@ def help_text() -> str:
         "/start — شروع کار\n"
         "/help — راهنما\n"
         "/myid — نمایش شناسه کاربری شما\n"
+        "/chatid — نمایش شناسه همین گفتگو\n"
         "/forget — پاک‌کردن حافظه ذخیره‌شده همین گپ (فقط مدیر)\n\n"
         "دستورهای مدیر:\n"
         "/panel — پنل مدیریت\n"
@@ -138,6 +139,9 @@ def handle_update(update: dict) -> None:
 
     if command == "/myid":
         send(chat_id, f"شناسه کاربری شما:\n{sender_id}", message_id)
+        return
+    if command == "/chatid":
+        send(chat_id, f"شناسه این گفتگو:\n{chat_id}", message_id)
         return
     if command in {"/start", "/help"}:
         send(chat_id, "به MM COMMANDER خوش اومدی! 🛡️\n\n" + help_text(), message_id)
