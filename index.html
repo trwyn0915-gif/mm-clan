@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فرار از شهاب‌سنگ‌ها | بازی MM</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080d1b;color:#eef4ff;font-family:Tahoma,Arial,sans-serif;min-height:100vh;display:grid;place-items:center;padding:18px}
+.wrap{width:min(900px,100%)}header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+h1{font-size:clamp(22px,4vw,34px);margin:0}.tag{color:#8fa6ca;font-size:13px}
+.panel{background:#111b30;border:1px solid #253858;border-radius:18px;padding:14px;box-shadow:0 18px 60px #0008}
+.hud{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.stat{background:#1b2943;padding:9px 14px;border-radius:12px;min-width:100px}.stat small{display:block;color:#a9bbd6;font-size:11px;margin-bottom:4px}.stat b{font-size:20px}
+canvas{width:100%;height:auto;display:block;background:radial-gradient(ellipse at 50% 100%,#152b4c,#070d1b 72%);border-radius:13px;border:1px solid #2b4267;touch-action:none}
+.controls{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+button{border:0;border-radius:11px;padding:11px 17px;font-weight:bold;cursor:pointer;background:#54d6b0;color:#06251e;font-size:14px}button.secondary{background:#263956;color:#eaf2ff}
+.hint{color:#a9bbd6;font-size:13px;line-height:1.9;margin:10px 2px 0}
+.overlay{position:relative}.message{position:absolute;inset:0;display:grid;place-items:center;text-align:center;background:#071020bb;border-radius:13px;padding:20px}.message h2{font-size:27px;margin:0 0 10px}.message p{color:#c0cee2;line-height:1.8;margin:0 0 16px}
+</style></head>
+<body><main class="wrap">
+<header><div><h1>☄️ فرار از شهاب‌سنگ‌ها</h1><div class="tag">یک بازی کوچک و سرگرم‌کننده از طرف MM</div></div><div class="tag">ویژه ویندوز · بدون نصب</div></header>
+<section class="panel"><div class="hud">
+<div class="stat"><small>امتیاز</small><b id="score">۰</b></div><div class="stat"><small>رکورد این دستگاه</small><b id="best">۰</b></div><div class="stat"><small>سرعت</small><b id="level">۱</b></div>
+</div><div class="overlay"><canvas id="game" width="840" height="470" aria-label="بازی فرار از شهاب سنگ ها"></canvas>
+<div class="message" id="cover"><div><h2 id="title">آماده‌ای؟</h2><p id="desc">با کلیدهای ← و → یا A و D حرکت کن.<br>از شهاب‌سنگ‌ها دوری کن و تا می‌تونی امتیاز بگیر!</p><button id="start">شروع بازی</button></div></div></div>
+<div class="controls"><button class="secondary" id="left">◀ چپ</button><button class="secondary" id="right">راست ▶</button><button id="pause">توقف</button></div>
+<p class="hint">راهنما: با کلیدهای جهت‌دار یا A و D حرکت کن. با Space بازی را متوقف کن. روی صفحه هم می‌توانی لمس/درگ کنی. هرچه بیشتر دوام بیاوری، بازی سریع‌تر می‌شود.</p>
+</section></main>
+<script>
+const c=document.getElementById('game'),ctx=c.getContext('2d'),cover=document.getElementById('cover');
+const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),levelEl=document.getElementById('level');
+let player={x:420,y:405,r:17},rocks=[],score=0,best=Number(localStorage.mmMeteorBest||0),running=false,paused=false,over=false,keys={},frame=0,spawn=0;
+bestEl.textContent=fa(best);
+function fa(n){return Math.floor(n).toLocaleString('fa-IR')}
+function reset(){player.x=420;rocks=[];score=0;frame=0;spawn=0;scoreEl.textContent=fa(0);levelEl.textContent='۱';}
+function start(){reset();running=true;paused=false;over=false;cover.style.display='none';}
+function end(){running=false;over=true;if(score>best){best=score;localStorage.mmMeteorBest=best;bestEl.textContent=fa(best)}document.getElementById('title').textContent='بازی تموم شد!';document.getElementById('desc').innerHTML='امتیازت: <b>'+fa(score)+'</b><br>دوباره تلاش کن و رکوردت رو بشکن!';document.getElementById('start').textContent='شروع دوباره';cover.style.display='grid';}
+function draw(){ctx.clearRect(0,0,c.width,c.height);for(let i=0;i<65;i++){let x=(i*137)%840,y=(i*83+frame*.35)%470;ctx.fillStyle='#8ca9d5';ctx.globalAlpha=.25+(i%4)*.13;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;
+rocks.forEach(r=>{ctx.beginPath();ctx.fillStyle='#f18a67';ctx.shadowColor='#ff694a';ctx.shadowBlur=14;ctx.arc(r.x,r.y,r.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#ffd1a8';ctx.beginPath();ctx.arc(r.x-r.r*.25,r.y-r.r*.2,r.r*.22,0,7);ctx.fill()});
+ctx.save();ctx.translate(player.x,player.y);ctx.fillStyle='#5ce0c0';ctx.shadowColor='#5ce0c0';ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(0,-22);ctx.lineTo(17,17);ctx.lineTo(0,10);ctx.lineTo(-17,17);ctx.closePath();ctx.fill();ctx.restore();}
+function loop(){requestAnimationFrame(loop);if(running&&!paused){frame++;let speed=4+Math.min(7,score/180);if(keys.ArrowLeft||keys.a||keys.A)player.x-=6;if(keys.ArrowRight||keys.d||keys.D)player.x+=6;player.x=Math.max(22,Math.min(818,player.x));spawn++;if(spawn>Math.max(18,48-score/18)){spawn=0;rocks.push({x:25+Math.random()*790,y:-25,r:12+Math.random()*15,v:speed+Math.random()*2})}rocks.forEach(r=>r.y+=r.v);rocks=rocks.filter(r=>r.y<500);score+=.12;scoreEl.textContent=fa(score);levelEl.textContent=fa(1+Math.floor(score/120));for(const r of rocks){if(Math.hypot(r.x-player.x,r.y-player.y)<r.r+12){end();break}}}draw();}
+document.getElementById('start').onclick=start;document.getElementById('pause').onclick=()=>{if(!running)return;paused=!paused;document.getElementById('pause').textContent=paused?'ادامه':'توقف';if(paused){document.getElementById('title').textContent='بازی متوقف شد';document.getElementById('desc').textContent='برای ادامه روی دکمه ادامه بزن.';document.getElementById('start').textContent='ادامه';cover.style.display='grid';document.getElementById('start').onclick=()=>{paused=false;cover.style.display='none';document.getElementById('pause').textContent='توقف';document.getElementById('start').onclick=start}}else{cover.style.display='none'}};
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '){e.preventDefault();document.getElementById('pause').click()}});addEventListener('keyup',e=>keys[e.key]=false);
+document.getElementById('left').onpointerdown=()=>keys.ArrowLeft=true;document.getElementById('left').onpointerup=()=>keys.ArrowLeft=false;document.getElementById('right').onpointerdown=()=>keys.ArrowRight=true;document.getElementById('right').onpointerup=()=>keys.ArrowRight=false;
+c.onpointermove=e=>{if(e.buttons){const rect=c.getBoundingClientRect();player.x=(e.clientX-rect.left)/rect.width*c.width}};
+bestEl.textContent=fa(best);draw();loop();
+</script></body></html>
