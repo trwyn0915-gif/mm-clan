@@ -17,8 +17,8 @@ OWNER_IDS = {x.strip() for x in os.environ.get("MM_OWNER_IDS", "").split(",") if
 AI_CHAT_IDS = {x.strip() for x in os.environ.get("MM_AI_CHAT_IDS", "").split(",") if x.strip()}
 MEMORY_CHAT_IDS = {x.strip() for x in os.environ.get("MM_MEMORY_CHAT_IDS", "").split(",") if x.strip()}
 AI_API_KEY = os.environ.get("MM_AI_API_KEY", "").strip()
-AI_BASE_URL = os.environ.get("MM_AI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-AI_MODEL = os.environ.get("MM_AI_MODEL", "").strip()
+AI_BASE_URL = os.environ.get("MM_AI_BASE_URL", "http://localhost:11434/v1").rstrip("/")
+AI_MODEL = os.environ.get("MM_AI_MODEL", "qwen2.5:1.5b").strip()
 POLL_SECONDS = max(3, int(os.environ.get("POLL_SECONDS", "5")))
 AI_COOLDOWN_SECONDS = max(10, int(os.environ.get("MM_AI_COOLDOWN_SECONDS", "15")))
 BASE_URL = "https://botapi.rubika.ir/v3"
@@ -74,7 +74,7 @@ def send(chat_id: str, text: str, reply_to: str | None = None) -> None:
 
 
 def ask_ai(chat_id: str, user_id: str, display_name: str, user_text: str) -> str:
-    if not AI_API_KEY or not AI_MODEL:
+    if not AI_MODEL:
         raise AIServiceError("AI service is not configured")
     history = recent_messages(chat_id, 12) if chat_id in MEMORY_CHAT_IDS else []
     messages = build_messages(history, f"{display_name}: {user_text}")
@@ -84,10 +84,11 @@ def ask_ai(chat_id: str, user_id: str, display_name: str, user_text: str) -> str
         "temperature": 0.85,
         "max_tokens": 220,
     }
+    ai_headers = {"Authorization": f"Bearer {AI_API_KEY}"} if AI_API_KEY else {}
     result = _post_json(
         f"{AI_BASE_URL}/chat/completions",
         payload,
-        {"Authorization": f"Bearer {AI_API_KEY}"},
+        ai_headers,
     )
     try:
         answer = result["choices"][0]["message"]["content"]
@@ -200,8 +201,8 @@ def main() -> None:
     if MEMORY_CHAT_IDS:
         initialize_memory()
         log.info("Consent-configured local memory is enabled for %d chat(s).", len(MEMORY_CHAT_IDS))
-    if AI_CHAT_IDS and (not AI_API_KEY or not AI_MODEL):
-        log.warning("AI chats are enabled but MM_AI_API_KEY or MM_AI_MODEL is missing.")
+    if AI_CHAT_IDS and not AI_MODEL:
+        log.warning("AI chats are enabled but MM_AI_MODEL is missing.")
     try:
         me = api("getMe")
         BOT_ID = str(me.get("user_id") or me.get("bot_id") or "")
