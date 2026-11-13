@@ -215,6 +215,25 @@ def main() -> None:
         raise SystemExit(f"Bot connection failed: {exc}") from None
 
     offset_id: str | None = None
+
+    # Ignore updates that were already waiting before this launch.
+    # This prevents the bot from replying to hours-old chat messages on startup.
+    try:
+        while True:
+            pending = {"limit": 50}
+            if offset_id:
+                pending["offset_id"] = offset_id
+            data = api("getUpdates", pending)
+            updates = data.get("updates", [])
+            next_offset = data.get("next_offset_id")
+            if next_offset:
+                offset_id = next_offset
+            if not updates or len(updates) < 50 or not next_offset:
+                break
+            log.info("Skipping %d old pending update(s).", len(updates))
+    except RubikaAPIError as exc:
+        log.warning("Could not clear old pending updates: %s", exc)
+
     log.info("MM Commander polling loop started.")
     while True:
         try:
