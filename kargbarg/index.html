@@ -46,6 +46,12 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .typebtn:nth-child(3){background:#f5f1e7;border-color:#e5d8b8;color:#76561d}
 .typebtn:nth-child(4){background:#f1edf8;border-color:#d9cbea;color:#5d4380}
 .question{border:1px solid var(--line);border-radius:16px;padding:16px;margin:13px 0;background:#fff}
+.question-group{border:2px solid var(--line);border-radius:16px;padding:12px;margin:16px 0;background:#fff}
+.question-group-title{margin:0 0 10px!important}
+.question-group .question{margin:10px 0 0;border:1px solid #d5e0e1}
+.print-group{border:1.5px solid #000;margin:12px 0 16px;break-inside:avoid;color:#000}
+.print-group-title{font-weight:900;text-align:right;padding:7px 10px;border-bottom:1px solid #000;font-size:1rem}
+.print-group .printq{border-bottom:1px solid #000;padding:9px 8px}
 .qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .qtop strong{font-size:1.08rem}
 .qtype{font-size:.85rem;background:var(--teal-pale);color:var(--teal-dark);border-radius:9px;padding:3px 10px;font-weight:800}
@@ -100,6 +106,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .paper-meta{margin:6px 0 10px;border-color:#000}
  .paper-meta div{font-size:11.5pt!important;font-weight:800;padding:5px 7px;min-height:0;line-height:1.5;border-color:#000}
  .paper-section-title{background:#fff!important;color:#000!important;border:1px solid #000!important;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
+ .print-group{border:1.5px solid #000;margin:12px 0 16px;break-inside:avoid}
+ .print-group-title{font-size:14pt;font-weight:900;padding:7px 10px;border-bottom:1px solid #000}
+ .print-group .printq:last-child{border-bottom:0}
  .printq{break-inside:avoid;grid-template-columns:38px 1fr;gap:8px;padding:12px 4px;line-height:2.15;font-size:14pt}
  .printq .num{font-size:15pt;font-weight:900}
  .printq .qtext{font-size:15pt;font-weight:800;line-height:2.1}
@@ -213,16 +222,27 @@ function addQuestion(type){
  questions.push(q);renderQuestions();
 }
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function getQuestionGroups(){
+ const groups=[];
+ questions.forEach((q,i)=>{
+  let g=groups[groups.length-1];
+  if(!g||g.type!==q.type){g={type:q.type,items:[]};groups.push(g);}
+  g.items.push(q);
+ });
+ return groups;
+}
 function renderQuestions(){
+ const groups=getQuestionGroups();
  $('questions').innerHTML='<h2 style="margin-top:22px">سؤال‌های کاربرگ ('+questions.length+')</h2>'+
- (questions.length?questions.map((q,i)=>'<div class="question" data-q="'+esc(q.id)+'">'+
+ (questions.length?groups.map(g=>'<div class="question-group"><label class="question-group-title">عنوان کادر '+esc(g.type)+'</label><input value="'+esc(g.items[0].groupTitle||'')+'" oninput="updateGroupTitle(\''+esc(g.items[0].id)+'\',this.value)" placeholder="عنوانی برای این مجموعه سؤال بنویسید">'+
+ g.items.map(q=>{const i=questions.indexOf(q);return '<div class="question" data-q="'+esc(q.id)+'">'+
  '<div class="qtop"><strong>سؤال '+(i+1)+'</strong><span class="qtype">'+esc(q.type)+'</span><button class="smallbtn danger" onclick="removeQ(\''+esc(q.id)+'\')">حذف سؤال</button></div>'+
  '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea>'+
  (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"></div>').join('')+'</div>':'')+
- '<label>بارم (اختیاری)</label><input inputmode="decimal" value="'+esc(q.marks)+'" oninput="updateQ(\''+esc(q.id)+'\',\'marks\',this.value)" placeholder="مثلاً ۲">'+
- '</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
+ '</div>';}).join('')+'</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
+function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupTitle=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
 function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,questions:JSON.parse(JSON.stringify(questions))};}
@@ -249,14 +269,20 @@ function deleteSheet(i){
 function makePreview(){
  if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
  const s=getSheet();
- let questionHtml=s.questions.map((q,i)=>{
+ const groups=[];
+ s.questions.forEach((q,i)=>{
+  let g=groups[groups.length-1];
+  if(!g||g.type!==q.type){g={type:q.type,title:q.groupTitle||'',items:[]};groups.push(g);}
+  g.items.push({q,index:i});
+ });
+ let questionHtml=groups.map(g=>'<div class="print-group">'+(g.title?'<div class="print-group-title">'+esc(g.title)+'</div>':'')+
+ g.items.map(({q,index})=>{
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
-  // برای جای خالی، دبیر نقطه‌چین را داخل متن جمله می‌نویسد؛ خط جداگانه‌ای زیر سؤال چاپ نمی‌شود.
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
-  return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
- }).join('');
+  return '<div class="printq"><div class="num">'+(index+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
+ }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>'+esc(s.title)+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span></div></div>'+
  '<div class="paper-meta"><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div><div style="grid-column:1/-1;border:0">فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</div></div>'+
  '<div class="paper-section-title">سؤالات</div>'+questionHtml+
