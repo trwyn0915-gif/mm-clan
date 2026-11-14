@@ -287,12 +287,14 @@ function makePreview(){
   g.items.push({q,index:i});
  });
  let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span></div>'+
- g.items.map(({q,index})=>{
+ g.items.map(({q,index},itemIndex)=>{
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
-  return '<div class="printq"><div class="num">'+(index+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
+  const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
+  const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
+  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
