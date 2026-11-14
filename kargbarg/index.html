@@ -54,26 +54,29 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .hidden{display:none!important}
 .empty{padding:22px;text-align:center;border:1px dashed #9eb7b9;border-radius:14px;color:var(--muted)}
 #previewArea{background:white;border:1px solid #9aabad;border-radius:8px;padding:clamp(14px,3vw,30px);color:#172b36}
-.paper-head{text-align:center;border:1px solid #80999b;padding:5px 9px;margin-bottom:7px}
-.paper-head h2{font-size:1.15rem;margin:0;color:#142f35;line-height:1.5}
-.paper-subtitle{display:none}
-.paper-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #9aabad;margin:6px 0 10px}
-.paper-meta div{padding:4px 7px;border-bottom:1px solid #d0dada;font-size:.82rem;min-height:0;line-height:1.5}
-.paper-meta div:nth-child(odd){border-left:1px solid #d0dada}
+.exam-top{display:grid;grid-template-columns:1fr 1fr 1fr;border:1.5px solid #000;margin-bottom:7px;align-items:stretch;color:#000}
+.exam-top>div{padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:.84rem;font-weight:800}
+.exam-info{border-left:1px solid #000;text-align:right}
+.exam-bismillah{border-left:1px solid #000;text-align:center;align-items:center;font-size:1rem!important;font-weight:900!important}
+.exam-student{text-align:right}
+.exam-duration{font-size:.8rem;font-weight:800}
+.paper-head{display:none}
+.paper-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #000;margin:6px 0 10px}
+.paper-meta div{padding:4px 7px;border-bottom:1px solid #000;font-size:.82rem;min-height:0;line-height:1.5;color:#000}
+.paper-meta div:nth-child(odd){border-left:1px solid #000}
 .paper-meta div:nth-last-child(-n+2){border-bottom:0}
-.paper-meta .student-name{grid-column:1/-1;border-left:0!important;font-size:11pt;font-weight:900;min-height:0;padding:5px 7px}
-.paper-section-title{background:#b8efea;border:1px solid #4c8d89;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
+.paper-section-title{background:#fff;border:1px solid #000;color:#000;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
 .printq .num{font-weight:900;color:var(--teal-dark)}
 .printq .qbody{min-width:0}
-.printq .qbody-truefalse{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:12px}
 .printq .qbody-truefalse .qtext{flex:1;min-width:0}
-.printq .qbody-truefalse .truefalse{flex:0 0 auto;margin:0;white-space:nowrap}
+.printq .qbody-truefalse .truefalse{flex:0 0 auto;width:auto;margin:0 0 0 auto;white-space:nowrap}
 .printq .qtext{font-weight:700;white-space:pre-wrap}
 .print-options{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin:8px 0 0}
 .print-option{font-size:.93rem}
 .answer-lines{height:76px;margin-top:8px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,#aebabb 30px,#aebabb 31px)}
-.truefalse{margin-top:5px;display:flex;direction:rtl;justify-content:flex-start;align-items:center;text-align:right;width:100%;gap:18px;flex-wrap:wrap}
+.truefalse{margin-top:0;display:flex;direction:rtl;justify-content:flex-start;align-items:center;text-align:right;width:auto;gap:12px;flex-wrap:nowrap;color:#000}
 .truefalse span{display:inline-flex;direction:rtl;align-items:center;gap:4px;white-space:nowrap}
 .blank-line{border-bottom:1px dotted #53696b;height:30px;margin-top:6px}
 .paper-foot{display:flex;justify-content:space-between;margin-top:25px;padding-top:10px;border-top:1px solid #9aabad;font-size:.85rem}
@@ -82,6 +85,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 @media print{
  @page{size:A4;margin:12mm}
  html{font-size:16px}
+ #previewArea,#previewArea *{color:#000!important;background-color:#fff!important;box-shadow:none!important;border-color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  body{background:#fff;font-size:14pt;color:#111;line-height:2}
  header,.no-print,footer{display:none!important}
  main{width:100%;padding:0;margin:0}
@@ -89,16 +93,18 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #builder,#homePanel,#listPanel{display:none!important}
  #previewPanel{display:block!important}
  #previewArea{border:0;border-radius:0;padding:0;font-size:14pt}
- .paper-head{border-width:1.5px;padding:5px 9px;margin-bottom:7px}
- .paper-head h2{font-size:16pt!important;font-weight:900!important;line-height:1.5}
- .paper-subtitle{display:none}
- .paper-meta{margin:6px 0 10px}
- .paper-meta div{font-size:11.5pt!important;font-weight:800;padding:5px 7px;min-height:0;line-height:1.5}
- .paper-meta .student-name{font-size:12pt!important;padding:5px 7px}
- .paper-section-title{background:#b8efea!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
+ .exam-top{grid-template-columns:1fr 1fr 1fr;border:1.5px solid #000;margin-bottom:7px}
+ .exam-top>div{padding:5px 7px;font-size:11pt;color:#000}
+ .exam-bismillah{font-size:13pt!important}
+ .exam-duration{font-size:10.5pt}
+ .paper-meta{margin:6px 0 10px;border-color:#000}
+ .paper-meta div{font-size:11.5pt!important;font-weight:800;padding:5px 7px;min-height:0;line-height:1.5;border-color:#000}
+ .paper-section-title{background:#fff!important;color:#000!important;border:1px solid #000!important;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
  .printq{break-inside:avoid;grid-template-columns:38px 1fr;gap:8px;padding:12px 4px;line-height:2.15;font-size:14pt}
  .printq .num{font-size:15pt;font-weight:900}
  .printq .qtext{font-size:15pt;font-weight:800;line-height:2.1}
+ .printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:12px}
+ .printq .qbody-truefalse .truefalse{margin:0 0 0 auto;white-space:nowrap}
  .printq .qtext small{font-size:11.5pt;font-weight:800}
  .print-option,.truefalse{font-size:13.5pt;font-weight:700}
  .print-options{gap:8px 18px;margin-top:10px}
@@ -125,6 +131,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="grade">پایه / کلاس</label><input id="grade" placeholder="برای نمونه: پایه هفتم"></div>
 <div><label for="teacher">نام دبیر</label><input id="teacher" placeholder="نام دبیر"></div>
 <div><label for="date">تاریخ</label><input id="date" placeholder="۱۴۰۵/۰۸/۲۴"></div>
+<div><label for="duration">مدت زمان آزمون</label><input id="duration" placeholder="مثلاً ۷۰ دقیقه"></div>
+<div><label for="chapters">فصل‌های مورد آزمون</label><textarea id="chapters" placeholder="مثلاً فصل اول و دوم"></textarea></div>
 </div>
 <div class="panel" style="padding:16px;margin-top:20px;background:#f7fbfb">
 <h2>افزودن نوع سؤال</h2>
@@ -197,7 +205,7 @@ window.addEventListener('popstate',()=>{
 });
 function newSheet(){
  questions=[];
- ['title','grade','teacher','date'].forEach(x=>$(x).value='');
+ ['title','grade','teacher','date','duration','chapters'].forEach(x=>$(x).value='');
  renderQuestions();show('builder');
 }
 function addQuestion(type){
@@ -217,7 +225,7 @@ function renderQuestions(){
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
-function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,questions:JSON.parse(JSON.stringify(questions))};}
+function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,questions:JSON.parse(JSON.stringify(questions))};}
 function readSaved(){try{return JSON.parse(localStorage.getItem('worksheet_saves')||'[]');}catch(e){return[];}}
 function saveSheet(){
  if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
@@ -231,7 +239,7 @@ function showSaved(){
 }
 function loadSheet(i){
  const s=saved[i];if(!s)return;
- ['title','grade','teacher','date'].forEach(k=>$(k).value=s[k]||'');
+ ['title','grade','teacher','date','duration','chapters'].forEach(k=>$(k).value=s[k]||'');
  questions=Array.isArray(s.questions)?s.questions:[];
  renderQuestions();show('builder');
 }
@@ -249,9 +257,9 @@ function makePreview(){
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
   return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
  }).join('');
- $('previewArea').innerHTML='<div class="paper-head"><h2>'+esc(s.title)+'</h2><div class="paper-subtitle">برگه تمرین و ارزشیابی</div></div>'+
- '<div class="paper-meta"><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div><div class="student-name">نام و نام خانوادگی:</div></div>'+
- '<div class="paper-section-title">بخش اول ـ به پرسش‌های زیر پاسخ دهید.</div>'+questionHtml+
+ $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>'+esc(s.title)+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span></div></div>'+
+ '<div class="paper-meta"><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div><div style="grid-column:1/-1;border:0">فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</div></div>'+
+ '<div class="paper-section-title">سؤالات</div>'+questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
 }
