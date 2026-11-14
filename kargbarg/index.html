@@ -49,10 +49,10 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .question-group{border:2px solid var(--line);border-radius:16px;padding:12px;margin:16px 0;background:#fff}
 .question-group-title{margin:0 0 10px!important}
 .question-group .question{margin:10px 0 0;border:1px solid #d5e0e1}
-.print-group{border:1.5px solid #000;margin:6px 0 8px;color:#000;break-inside:auto}
-.print-group-title{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:flex-start;gap:8px;font-weight:900;text-align:right;padding:4px 8px;border-bottom:1px solid #000;font-size:1rem;break-after:avoid-page;page-break-after:avoid}
+.print-group{border:1px solid #000;margin:5px 0 7px;color:#000;break-inside:auto}
+.print-group-title{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:flex-start;gap:9px;font-weight:900;text-align:right;padding:4px 8px;border-bottom:1px solid #000;font-size:1rem;break-after:avoid-page;page-break-after:avoid}
 .print-group-title + .printq{break-before:avoid-page;page-break-before:avoid}
-.print-group-number{flex:0 0 auto;min-width:34px;text-align:center;font-size:1.35rem;line-height:1.2;font-weight:900}
+.print-group-number{flex:0 0 auto;min-width:38px;text-align:center;font-size:1.55rem;line-height:1.2;font-weight:900}
 .print-group .printq{border-bottom:1px solid #000;padding:5px 6px;break-inside:avoid;page-break-inside:avoid}
 .qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .qtop strong{font-size:1.08rem}
@@ -62,17 +62,17 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .hidden{display:none!important}
 .empty{padding:22px;text-align:center;border:1px dashed #9eb7b9;border-radius:14px;color:var(--muted)}
 #previewArea{background:white;border:1px solid #9aabad;border-radius:8px;padding:clamp(14px,3vw,30px);color:#172b36}
-.exam-top{display:grid;direction:ltr;grid-template-columns:1fr 1fr 1fr;border:1.5px solid #000;margin-bottom:7px;align-items:stretch;color:#000}
-.exam-top>div{padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:.84rem;font-weight:800}
+.exam-top{display:grid;direction:ltr;grid-template-columns:1fr 1fr 1fr;border:1.25px solid #000;margin-bottom:7px;align-items:stretch;color:#000}
+.exam-top>div{padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:.84rem;font-weight:800;min-width:0}
 .exam-info{grid-column:1;grid-row:1;border-right:1px solid #000;text-align:right;direction:rtl}
 .exam-bismillah{grid-column:2;grid-row:1;border-right:1px solid #000;text-align:center;align-items:center;font-size:1rem!important;font-weight:900!important;direction:rtl}
-.exam-student{grid-column:3;grid-row:1;text-align:right;direction:rtl}
+.exam-student{grid-column:3;grid-row:1;text-align:right;direction:rtl}\n.exam-chapters{grid-column:1/-1;grid-row:2;border-top:1px solid #000;text-align:right;direction:rtl;min-height:30px}
 .exam-duration{font-size:.8rem;font-weight:800}
 .paper-head{display:none}
 .paper-meta{display:none}
 .paper-section-title{background:#fff;border:1px solid #000;color:#000;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
-.printq .num{font-size:.78rem;font-weight:700;color:var(--teal-dark)}
+.printq .num{font-size:.72rem;font-weight:700;color:var(--teal-dark)}
 .printq .qbody{min-width:0}
 .printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:12px}
 .printq .qbody-truefalse .qtext{flex:1;min-width:0}
@@ -80,7 +80,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .printq .qtext{font-weight:700;white-space:pre-wrap}
 .print-options{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin:8px 0 0}
 .print-option{font-size:.93rem}
-.answer-lines{height:42px;margin-top:3px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 19px,#000 20px,#000 21px)}
+.answer-lines{height:40px;margin-top:2px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 18px,#000 19px,#000 19.8px)}
 .truefalse{margin-top:0;display:flex;direction:rtl;justify-content:flex-start;align-items:center;text-align:right;width:auto;gap:12px;flex-wrap:nowrap;color:#000}
 .truefalse span{display:inline-flex;direction:rtl;align-items:center;gap:4px;white-space:nowrap}
 .blank-line{border-bottom:1px dotted #53696b;height:30px;margin-top:6px}
@@ -88,7 +88,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 @media(min-width:620px){.home-grid{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr 1fr}.actions.two{grid-template-columns:1fr 1fr}.typegrid{grid-template-columns:repeat(4,1fr)}}
 @media print{
- @page{size:A4;margin:9mm}
+ @page{size:A4;margin:9mm 9mm 14mm}\n @page{@bottom-center{content:"صفحه " counter(page);font-family:Tahoma,Arial,sans-serif;font-size:9pt;color:#000}}
  html{font-size:16px}
  #previewArea,#previewArea *{color:#000!important;background-color:#fff!important;box-shadow:none!important;border-color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  body{background:#fff;font-size:14pt;color:#111;line-height:2}
@@ -98,30 +98,30 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #builder,#homePanel,#listPanel{display:none!important}
  #previewPanel{display:block!important}
  #previewArea{border:0;border-radius:0;padding:0;font-size:14pt}
- .exam-top{direction:ltr;grid-template-columns:1fr 1fr 1fr;border:1.5px solid #000;margin-bottom:4px}
+ .exam-top{direction:ltr;grid-template-columns:1fr 1fr 1fr;border:1.25px solid #000;margin-bottom:4px}
  .exam-info{grid-column:1;grid-row:1;border-right:1px solid #000;border-left:0;direction:rtl}
  .exam-bismillah{grid-column:2;grid-row:1;border-right:1px solid #000;border-left:0;direction:rtl}
- .exam-student{grid-column:3;grid-row:1;direction:rtl}
+ .exam-student{grid-column:3;grid-row:1;direction:rtl}\n .exam-chapters{grid-column:1/-1;grid-row:2;border-top:1px solid #000;text-align:right;direction:rtl;padding:4px 7px!important;font-size:10.5pt!important}
  .exam-top>div{padding:5px 7px;font-size:11pt;color:#000}
  .exam-bismillah{font-size:13pt!important}
  .exam-duration{font-size:10.5pt}
  .paper-meta{display:none!important}
  .paper-section-title{background:#fff!important;color:#000!important;border:1px solid #000!important;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
- .print-group{border:1.5px solid #000;margin:6px 0 8px;break-inside:auto}
+ .print-group{border:1px solid #000;margin:5px 0 7px;break-inside:auto}
  .print-group .printq{break-inside:avoid;page-break-inside:avoid}
  .print-group-title{font-size:14pt;font-weight:900;padding:4px 8px;border-bottom:1px solid #000;break-after:avoid-page;page-break-after:avoid}
  .print-group-title + .printq{break-before:avoid-page;page-break-before:avoid}
- .print-group-number{font-size:19pt!important;min-width:34px;text-align:center;font-weight:900}
+ .print-group-number{font-size:21pt!important;min-width:38px;text-align:center;font-weight:900}
  .print-group .printq:last-child{border-bottom:0}
  .printq{break-inside:avoid;grid-template-columns:24px 1fr;gap:6px;padding:5px 4px;line-height:1.65;font-size:14pt}
- .printq .num{font-size:11pt;font-weight:700}
+ .printq .num{font-size:10pt;font-weight:700}
  .printq .qtext{font-size:15pt;font-weight:800;line-height:1.65}
  .printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:8px}
  .printq .qbody-truefalse .truefalse{margin:0 0 0 auto;white-space:nowrap}
  .printq .qtext small{font-size:11.5pt;font-weight:800}
  .print-option,.truefalse{font-size:13.5pt;font-weight:700}
  .print-options{gap:4px 14px;margin-top:4px}
- .answer-lines{height:42px;margin-top:3px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 19px,#000 20px,#000 21px)!important}
+ .answer-lines{height:40px;margin-top:2px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 18px,#000 19px,#000 19.8px)!important}
  .paper-foot{font-size:12pt;font-weight:800;margin-top:12px}
 }
 </style>
@@ -296,7 +296,7 @@ function makePreview(){
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
   return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
- $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
+ $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span></div><div class="exam-chapters"><strong>فصل‌های مورد آزمون:</strong> '+esc(s.chapters||'........................')+'</div></div>'+
   questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
