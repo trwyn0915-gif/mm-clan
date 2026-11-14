@@ -137,7 +137,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <script>
 let questions=[],saved=[];
 const $=id=>document.getElementById(id);
-let buttonSoundEnabled=false;
+let buttonSoundEnabled=true;
 let buttonAudioContext=null;
 function toggleButtonSound(){
  buttonSoundEnabled=!buttonSoundEnabled;
@@ -172,7 +172,7 @@ document.addEventListener('click',event=>{
  const button=event.target.closest('button');
  if(button&&button.id!=='soundToggle'&&buttonSoundEnabled)playButtonSound();
 });
-try{buttonSoundEnabled=localStorage.getItem('worksheet_button_sound')==='on';}catch(e){}
+try{const savedButtonSound=localStorage.getItem('worksheet_button_sound');if(savedButtonSound!==null)buttonSoundEnabled=savedButtonSound==='on';}catch(e){}
 
 const panelIds=['homePanel','builder','listPanel','previewPanel'];
 let currentPanel='homePanel',historyReady=false;
