@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1457c5">
+<meta name="description" content="کاربرگ‌ساز ساده مدرسه؛ طراحی و چاپ برگه‌های آموزشی">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>کاربرگ‌ساز مدرسه</title>
+<style>
+:root{--blue:#1457c5;--blue2:#2478ee;--green:#16a765;--orange:#f28a12;--purple:#7956d8;--ink:#17243a;--muted:#65738a;--bg:#f3f6fc;--line:#dfe6f1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,"Arial",sans-serif;color:var(--ink);font-size:17px}
+header{background:linear-gradient(135deg,#1046a6,#2478ee);color:white;padding:22px 18px 26px;border-radius:0 0 25px 25px;box-shadow:0 5px 18px #123b7926}
+h1{font-size:25px;margin:0 0 8px}header p{margin:0;font-size:14px;opacity:.95}
+main{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+.panel{background:white;border-radius:20px;padding:17px;margin:14px 0;box-shadow:0 4px 15px #1b37620d;border:1px solid #edf1f7}
+h2{font-size:19px;margin:0 0 14px}
+label{display:block;font-weight:bold;font-size:15px;margin:13px 0 7px}
+input,textarea,select{width:100%;border:2px solid var(--line);border-radius:13px;padding:14px;font:inherit;font-size:16px;background:#fff;color:var(--ink);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--blue2)}
+textarea{min-height:90px;resize:vertical}
+button{border:0;border-radius:15px;padding:15px 16px;font:inherit;font-weight:bold;font-size:16px;cursor:pointer;min-height:54px}
+button:focus-visible{outline:3px solid #f6bd35;outline-offset:2px}
+.primary{background:var(--blue2);color:white;width:100%}.green{background:var(--green);color:white}.orange{background:var(--orange);color:white}.purple{background:var(--purple);color:white}.soft{background:#eaf1ff;color:#164da9}.danger{background:#fff0ef;color:#b22c26}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.typegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.typebtn{background:#edf3ff;color:#154eaa;min-height:72px}
+.typebtn:nth-child(2){background:#e8f8ef;color:#087943}.typebtn:nth-child(3){background:#fff2df;color:#965400}.typebtn:nth-child(4){background:#f0eaff;color:#6142b5}
+.question{border:1px solid var(--line);border-radius:15px;padding:14px;margin:11px 0;background:#fff}
+.qtop{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.qtype{font-size:12px;color:#52647e;background:#f0f3f8;padding:6px 9px;border-radius:20px}
+.qtext{white-space:pre-wrap;line-height:1.8}
+.smallbtn{min-height:38px;padding:8px 12px;font-size:13px}
+.muted{color:var(--muted);font-size:13px;line-height:1.7}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:16px}
+#previewArea{background:white;border:1px dashed #9aa8bd;padding:20px;border-radius:12px}
+#previewArea h2{text-align:center;font-size:20px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}
+.meta div{border-bottom:1px solid #777;padding:8px 2px;font-size:14px}
+.printq{margin:15px 0;line-height:2.1;break-inside:avoid}
+@media(min-width:620px){main{padding-top:24px}.typegrid{grid-template-columns:repeat(4,1fr)}}
+@media print{
+ body{background:white;font-size:12pt}header,.no-print,footer{display:none!important}
+ main{max-width:none;padding:0;margin:0}.panel{box-shadow:none;border:0;padding:0;margin:0}
+ #builder,#homePanel,#listPanel{display:none!important}#previewPanel{display:block!important}
+ #previewArea{border:0;padding:0}.printq{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1>📘 کاربرگ‌ساز مدرسه</h1>
+ <p>طراحی آسان سؤال و آماده‌سازی برگه برای چاپ</p>
+</header>
+<main>
+<section class="panel no-print" id="homePanel">
+ <h2>سلام دبیر عزیز 👋</h2>
+ <p class="muted">برای شروع یکی از گزینه‌های زیر را انتخاب کنید. کار با برنامه ساده است و سؤال‌ها به‌ترتیب روی برگه قرار می‌گیرند.</p>
+ <div class="actions">
+  <button class="primary" onclick="newSheet()">＋ ساخت کاربرگ جدید</button>
+  <button class="green" onclick="showSaved()">📂 کاربرگ‌های ذخیره‌شده</button>
+ </div>
+</section>
+
+<section class="panel hidden" id="builder">
+ <h2>مشخصات کاربرگ</h2>
+ <label for="title">عنوان درس یا کاربرگ</label><input id="title" placeholder="مثلاً: تمرین ریاضی">
+ <div class="actions">
+  <div><label for="grade">پایه / کلاس</label><input id="grade" placeholder="مثلاً: هفتم"></div>
+  <div><label for="teacher">نام دبیر</label><input id="teacher" placeholder="نام شما"></div>
+ </div>
+ <div class="actions">
+  <div><label for="student">نام دانش‌آموز</label><input id="student" placeholder="نام و نام خانوادگی"></div>
+  <div><label for="date">تاریخ</label><input id="date" placeholder="مثلاً: ۱۴۰۵/۰۸/۲۴"></div>
+ </div>
+ <div class="panel" style="padding:13px;background:#f8faff">
+  <h2>نوع سؤال را انتخاب کنید</h2>
+  <div class="typegrid">
+   <button class="typebtn" onclick="addQuestion('تشریحی')">✍️<br>تشریحی</button>
+   <button class="typebtn" onclick="addQuestion('صحیح / غلط')">☑️<br>صحیح / غلط</button>
+   <button class="typebtn" onclick="addQuestion('جای خالی')">＿＿<br>جای خالی</button>
+   <button class="typebtn" onclick="addQuestion('چهارگزینه‌ای')">🔘<br>چهارگزینه‌ای</button>
+  </div>
+ </div>
+ <div id="questions"></div>
+ <button class="primary" onclick="saveSheet()">ذخیره کاربرگ</button>
+ <div class="actions">
+  <button class="orange" onclick="makePreview()">👁 پیش‌نمایش و چاپ</button>
+  <button class="soft" onclick="backHome()">بازگشت</button>
+ </div>
+</section>
+
+<section class="panel hidden no-print" id="listPanel">
+ <h2>کاربرگ‌های ذخیره‌شده</h2>
+ <div id="savedList"></div>
+ <button class="soft" style="width:100%;margin-top:12px" onclick="backHome()">بازگشت</button>
+</section>
+
+<section class="panel hidden" id="previewPanel">
+ <div class="no-print actions" style="margin-bottom:15px">
+  <button class="orange" onclick="window.print()">🖨 چاپ / ذخیره PDF</button>
+  <button class="soft" onclick="backBuilder()">بازگشت به ویرایش</button>
+ </div>
+ <div id="previewArea"></div>
+ <p class="muted no-print">در پنجره چاپ گوشی، گزینه «ذخیره به‌صورت PDF» یا چاپگر را انتخاب کنید.</p>
+</section>
+<footer>کاربرگ‌ساز مدرسه · نسخه آزمایشی آفلاین</footer>
+</main>
+<script>
+let questions=[], saved=[];
+const $=id=>document.getElementById(id);
+const panels=['homePanel','builder','listPanel','previewPanel'];
+function show(id){panels.forEach(p=>$(p).classList.toggle('hidden',p!==id));}
+function newSheet(){questions=[];['title','grade','teacher','student','date'].forEach(x=>$(x).value='');renderQuestions();show('builder');}
+function backHome(){show('homePanel')}
+function backBuilder(){show('builder')}
+function addQuestion(type){
+ const q={id:Date.now()+Math.random(),type,text:'',options:['','','',''],marks:''};questions.push(q);renderQuestions();
+ setTimeout(()=>{let el=document.querySelector(`[data-q="${q.id}"] textarea`);if(el)el.focus()},50);
+}
+function renderQuestions(){
+ $('questions').innerHTML='<h2 style="margin-top:20px">سؤال‌های کاربرگ ('+questions.length+')</h2>'+questions.map((q,i)=>`
+ <div class="question" data-q="${q.id}">
+  <div class="qtop"><strong>سؤال ${i+1}</strong><span class="qtype">${q.type}</span><button class="smallbtn danger" onclick="removeQ('${q.id}')">حذف</button></div>
+  <label>متن سؤال</label><textarea oninput="updateQ('${q.id}','text',this.value)" placeholder="متن سؤال را اینجا بنویسید...">${esc(q.text)}</textarea>
+  ${q.type==='چهارگزینه‌ای'?`<div class="actions">${q.options.map((o,j)=>`<div><label>گزینه ${'الف ب ج د'.split(' ')[j]}</label><input value="${esc(o)}" oninput="updateOption('${q.id}',${j},this.value)" placeholder="متن گزینه"></div>`).join('')}</div>`:''}
+  ${q.type==='تشریحی'?'<p class="muted">در برگه چاپی زیر این سؤال فضای پاسخ قرار می‌گیرد.</p>':''}
+  <label>بارم (اختیاری)</label><input inputmode="decimal" placeholder="مثلاً ۲" value="${esc(q.marks)}" oninput="updateQ('${q.id}','marks',this.value)">
+ </div>`).join('');
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function updateQ(id,k,v){let q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v}
+function updateOption(id,j,v){let q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v}
+function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions()}
+function getSheet(){return {title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,student:$('student').value,date:$('date').value,questions};}
+function saveSheet(){
+ if(!questions.length){alert('لطفاً دست‌کم یک سؤال اضافه کنید.');return}
+ let s=getSheet();saved=JSON.parse(localStorage.getItem('worksheet_saves')||'[]');s.savedAt=new Date().toLocaleString('fa-IR');saved.unshift(s);localStorage.setItem('worksheet_saves',JSON.stringify(saved));alert('کاربرگ ذخیره شد.');}
+function showSaved(){
+ saved=JSON.parse(localStorage.getItem('worksheet_saves')||'[]');
+ $('savedList').innerHTML=saved.length?saved.map((s,i)=>`<div class="question"><strong>${esc(s.title)}</strong><p class="muted">${esc(s.grade)} · ${s.questions.length} سؤال · ${esc(s.savedAt)}</p><div class="actions"><button class="soft" onclick="loadSheet(${i})">باز کردن</button><button class="danger" onclick="deleteSheet(${i})">حذف</button></div></div>`).join(''):'<p class="muted">هنوز کاربرگی ذخیره نشده است.</p>';
+ show('listPanel');
+}
+function loadSheet(i){let s=saved[i];['title','grade','teacher','student','date'].forEach(k=>$(k).value=s[k]||'');questions=s.questions||[];renderQuestions();show('builder')}
+function deleteSheet(i){if(confirm('این کاربرگ حذف شود؟')){saved.splice(i,1);localStorage.setItem('worksheet_saves',JSON.stringify(saved));showSaved()}}
+function makePreview(){
+ if(!questions.length){alert('ابتدا سؤال اضافه کنید.');return}
+ let s=getSheet();
+ $('previewArea').innerHTML=`<h2>${esc(s.title)}</h2>
+ <div class="meta"><div>نام و نام خانوادگی: ${esc(s.student)||'................................'}</div><div>پایه / کلاس: ${esc(s.grade)||'................'}</div><div>نام دبیر: ${esc(s.teacher)||'................................'}</div><div>تاریخ: ${esc(s.date)||'................'}</div></div>
+ ${s.questions.map((q,i)=>`<div class="printq"><strong>${i+1}. </strong>${esc(q.text)||'........................................................'} ${q.marks?`<small>(${esc(q.marks)} نمره)</small>`:''}
+ ${q.type==='چهارگزینه‌ای'?`<div style="padding-right:24px">الف) ${esc(q.options[0])}　 ب) ${esc(q.options[1])}<br>ج) ${esc(q.options[2])}　 د) ${esc(q.options[3])}</div>`:''}
+ ${q.type==='صحیح / غلط'?'<div style="padding-right:24px">□ صحیح　　 □ غلط</div>':''}
+ ${q.type==='جای خالی'?'<div style="padding-right:24px">....................................................................</div>':''}
+ ${q.type==='تشریحی'?'<div style="height:85px;border-bottom:1px dotted #777;margin:5px 0"></div>':''}
+ </div>`).join('')}
+ <p style="text-align:left;margin-top:35px">موفق باشید 🌷</p>`;
+ show('previewPanel');
+}
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+</script>
+</body></html>
