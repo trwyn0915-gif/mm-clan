@@ -102,7 +102,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 </style>
 </head>
 <body>
-<header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>طراحی و آماده‌سازی برگه‌های آموزشی برای چاپ</p><button id="soundToggle" class="sound-toggle" type="button" aria-pressed="false" onclick="toggleButtonSound()">صدای دکمه‌ها: خاموش</button></div></header>
+<header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>طراحی و آماده‌سازی برگه‌های آموزشی برای چاپ</p></div></header>
 <main>
 <section class="panel no-print" id="homePanel">
 <h2>سامانه طراحی کاربرگ</h2>
@@ -150,18 +150,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <script>
 let questions=[],saved=[];
 const $=id=>document.getElementById(id);
-let buttonSoundEnabled=true;
 let buttonAudioContext=null;
-function toggleButtonSound(){
- buttonSoundEnabled=!buttonSoundEnabled;
- try{localStorage.setItem('worksheet_button_sound',buttonSoundEnabled?'on':'off');}catch(e){}
- const control=$('soundToggle');
- if(control){
-  control.textContent='صدای دکمه‌ها: '+(buttonSoundEnabled?'روشن':'خاموش');
-  control.setAttribute('aria-pressed',buttonSoundEnabled?'true':'false');
- }
- if(buttonSoundEnabled)playButtonSound();
-}
 function playButtonSound(){
  try{
   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
@@ -183,9 +172,8 @@ function playButtonSound(){
 }
 document.addEventListener('click',event=>{
  const button=event.target.closest('button');
- if(button&&button.id!=='soundToggle'&&buttonSoundEnabled)playButtonSound();
+ if(button)playButtonSound();
 });
-try{const savedButtonSound=localStorage.getItem('worksheet_button_sound');if(savedButtonSound!==null)buttonSoundEnabled=savedButtonSound==='on';}catch(e){}
 
 const panelIds=['homePanel','builder','listPanel','previewPanel'];
 let currentPanel='homePanel',historyReady=false;
@@ -260,11 +248,6 @@ function makePreview(){
  '<div class="paper-section-title">بخش اول ـ به پرسش‌های زیر پاسخ دهید.</div>'+questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
-}
-const soundControl=$('soundToggle');
-if(soundControl){
- soundControl.textContent='صدای دکمه‌ها: '+(buttonSoundEnabled?'روشن':'خاموش');
- soundControl.setAttribute('aria-pressed',buttonSoundEnabled?'true':'false');
 }
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
