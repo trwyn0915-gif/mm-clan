@@ -187,7 +187,7 @@ function playButtonSound(){
   oscillator.frequency.setValueAtTime(620,now);
   oscillator.frequency.exponentialRampToValueAtTime(470,now+0.055);
   gain.gain.setValueAtTime(0.0001,now);
-  gain.gain.exponentialRampToValueAtTime(0.055,now+0.008);
+  gain.gain.exponentialRampToValueAtTime(0.09,now+0.008);
   gain.gain.exponentialRampToValueAtTime(0.0001,now+0.065);
   oscillator.connect(gain);gain.connect(buttonAudioContext.destination);
   oscillator.start(now);oscillator.stop(now+0.07);
