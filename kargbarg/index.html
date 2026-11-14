@@ -51,7 +51,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .question-group .question{margin:10px 0 0;border:1px solid #d5e0e1}
 .print-group{border:1.5px solid #000;margin:12px 0 16px;color:#000;break-inside:auto}
 .print-group-title{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:flex-start;gap:8px;font-weight:900;text-align:right;padding:7px 10px;border-bottom:1px solid #000;font-size:1rem}
-.print-group-number{flex:0 0 auto;min-width:24px;text-align:center;font-weight:900}
+.print-group-number{flex:0 0 auto;min-width:34px;text-align:center;font-size:1.35rem;line-height:1.2;font-weight:900}
 .print-group .printq{border-bottom:1px solid #000;padding:9px 8px;break-inside:avoid;page-break-inside:avoid}
 .qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .qtop strong{font-size:1.08rem}
@@ -68,13 +68,10 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .exam-student{grid-column:3;grid-row:1;text-align:right;direction:rtl}
 .exam-duration{font-size:.8rem;font-weight:800}
 .paper-head{display:none}
-.paper-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #000;margin:6px 0 10px}
-.paper-meta div{padding:4px 7px;border-bottom:1px solid #000;font-size:.82rem;min-height:0;line-height:1.5;color:#000}
-.paper-meta div:nth-child(odd){border-left:1px solid #000}
-.paper-meta div:nth-last-child(-n+2){border-bottom:0}
+.paper-meta{display:none}
 .paper-section-title{background:#fff;border:1px solid #000;color:#000;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
-.printq .num{font-weight:900;color:var(--teal-dark)}
+.printq .num{font-size:.78rem;font-weight:700;color:var(--teal-dark)}
 .printq .qbody{min-width:0}
 .printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:12px}
 .printq .qbody-truefalse .qtext{flex:1;min-width:0}
@@ -107,15 +104,15 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .exam-top>div{padding:5px 7px;font-size:11pt;color:#000}
  .exam-bismillah{font-size:13pt!important}
  .exam-duration{font-size:10.5pt}
- .paper-meta{margin:6px 0 10px;border-color:#000}
- .paper-meta div{font-size:11.5pt!important;font-weight:800;padding:5px 7px;min-height:0;line-height:1.5;border-color:#000}
+ .paper-meta{display:none!important}
  .paper-section-title{background:#fff!important;color:#000!important;border:1px solid #000!important;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
  .print-group{border:1.5px solid #000;margin:12px 0 16px;break-inside:auto}
  .print-group .printq{break-inside:avoid;page-break-inside:avoid}
  .print-group-title{font-size:14pt;font-weight:900;padding:7px 10px;border-bottom:1px solid #000}
+ .print-group-number{font-size:19pt!important;min-width:34px;text-align:center;font-weight:900}
  .print-group .printq:last-child{border-bottom:0}
- .printq{break-inside:avoid;grid-template-columns:38px 1fr;gap:8px;padding:12px 4px;line-height:2.15;font-size:14pt}
- .printq .num{font-size:15pt;font-weight:900}
+ .printq{break-inside:avoid;grid-template-columns:26px 1fr;gap:8px;padding:12px 4px;line-height:2.15;font-size:14pt}
+ .printq .num{font-size:10.5pt;font-weight:700}
  .printq .qtext{font-size:15pt;font-weight:800;line-height:2.1}
  .printq .qbody-truefalse{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:space-between;gap:12px}
  .printq .qbody-truefalse .truefalse{margin:0 0 0 auto;white-space:nowrap}
@@ -295,9 +292,8 @@ function makePreview(){
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
   return '<div class="printq"><div class="num">'+(index+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
- $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span></div></div>'+
- '<div class="paper-meta"><div>تاریخ آزمون: '+esc(s.date||'........................')+'</div><div style="grid-column:1/-1;border:0">فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</div></div>'+
- questionHtml+
+ $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span></div></div>'+
+  questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
 }
