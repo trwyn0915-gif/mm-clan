@@ -61,6 +61,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .paper-meta div{padding:9px 10px;border-bottom:1px solid #b4c3c4;font-size:.9rem;min-height:42px}
 .paper-meta div:nth-child(odd){border-left:1px solid #b4c3c4}
 .paper-meta div:nth-last-child(-n+2){border-bottom:0}
+.paper-meta .student-name{grid-column:1/-1;border-left:0!important;font-size:13pt;font-weight:900;min-height:52px}
 .paper-section-title{background:#b8efea;border:1px solid #4c8d89;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
 .printq .num{font-weight:900;color:var(--teal-dark)}
@@ -244,7 +245,7 @@ function makePreview(){
   return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
  }).join('');
  $('previewArea').innerHTML='<div class="paper-head"><h2>'+esc(s.title)+'</h2><div class="paper-subtitle">برگه تمرین و ارزشیابی</div></div>'+
- '<div class="paper-meta"><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div></div>'+
+ '<div class="paper-meta"><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div><div class="student-name">نام و نام خانوادگی: ................................................................</div></div>'+
  '<div class="paper-section-title">بخش اول ـ به پرسش‌های زیر پاسخ دهید.</div>'+questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
