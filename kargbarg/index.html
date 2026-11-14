@@ -66,6 +66,9 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
 .printq .num{font-weight:900;color:var(--teal-dark)}
 .printq .qbody{min-width:0}
+.printq .qbody-truefalse{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.printq .qbody-truefalse .qtext{flex:1;min-width:0}
+.printq .qbody-truefalse .truefalse{flex:0 0 auto;margin:0;white-space:nowrap}
 .printq .qtext{font-weight:700;white-space:pre-wrap}
 .print-options{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin:8px 0 0}
 .print-option{font-size:.93rem}
@@ -244,7 +247,7 @@ function makePreview(){
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
   // برای جای خالی، دبیر نقطه‌چین را داخل متن جمله می‌نویسد؛ خط جداگانه‌ای زیر سؤال چاپ نمی‌شود.
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
-  return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
+  return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
  }).join('');
  $('previewArea').innerHTML='<div class="paper-head"><h2>'+esc(s.title)+'</h2><div class="paper-subtitle">برگه تمرین و ارزشیابی</div></div>'+
  '<div class="paper-meta"><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div><div class="student-name">نام و نام خانوادگی:</div></div>'+
