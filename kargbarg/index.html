@@ -198,12 +198,12 @@ function makePreview(){
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>□ صحیح</span><span>□ غلط</span></div>';
-  if(q.type==='جای خالی')extra='<div class="blank-line"></div>';
+  // برای جای خالی، دبیر نقطه‌چین را داخل متن جمله می‌نویسد؛ خط جداگانه‌ای زیر سؤال چاپ نمی‌شود.
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
   return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
  }).join('');
  $('previewArea').innerHTML='<div class="paper-head"><h2>'+esc(s.title)+'</h2><div class="paper-subtitle">برگه تمرین و ارزشیابی</div></div>'+
- '<div class="paper-meta"><div>نام و نام خانوادگی: ....................................</div><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div></div>'+
+ '<div class="paper-meta"><div>پایه / کلاس: '+esc(s.grade||'........................')+'</div><div>نام دبیر: '+esc(s.teacher||'........................')+'</div><div>تاریخ: '+esc(s.date||'........................')+'</div></div>'+
  '<div class="paper-section-title">بخش اول ـ به پرسش‌های زیر پاسخ دهید.</div>'+questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
