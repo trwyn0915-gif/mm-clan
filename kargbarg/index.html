@@ -48,7 +48,8 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .question{border:1px solid var(--line);border-radius:16px;padding:16px;margin:13px 0;background:#fff}
 .question-group{border:2px solid var(--line);border-radius:16px;padding:12px;margin:16px 0;background:#fff}
 .question-group-title{margin:0 0 10px!important}
-.group-score-setting{display:flex;align-items:center;gap:10px;margin:9px 0 4px;padding:9px 10px;background:#f7f9fa;border:1px solid var(--line);border-radius:10px}.group-score-setting label{margin:0!important;white-space:nowrap}.group-score-setting input{max-width:130px;margin:0}.print-group-score{margin-right:auto;white-space:nowrap;font-size:.88rem;font-weight:800}
+.question-score-setting{display:flex;align-items:center;gap:10px;margin:8px 0 4px;padding:8px 10px;background:#f7f9fa;border:1px solid var(--line);border-radius:10px}.question-score-setting label{margin:0!important;white-space:nowrap}.question-score-setting input{max-width:130px;margin:0}.question-line{display:flex;direction:rtl;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0}.print-question-score{flex:0 0 auto;white-space:nowrap;font-size:.88rem;font-weight:800;margin-right:auto}
+.group-score-setting{display:flex;align-items:center;gap:10px;margin:9px 0 4px;padding:9px 10px;background:#f7f9fa;border:1px solid var(--line);border-radius:10px}.group-score-setting label{margin:0!important;white-space:nowrap}.group-score-setting input{max-width:130px;margin:0}
 .question-group .question{margin:10px 0 0;border:1px solid #d5e0e1}
 .print-group{border:1px solid #000;margin:5px 0 7px;color:#000;break-inside:auto}
 .print-group-title{display:flex;flex-direction:row;direction:rtl;align-items:center;justify-content:flex-start;gap:9px;font-weight:900;text-align:right;padding:4px 8px;border-bottom:1px solid #000;font-size:1rem;break-after:avoid-page;page-break-after:avoid}
@@ -247,16 +248,15 @@ function renderQuestions(){
  const groups=getQuestionGroups();
  $('questions').innerHTML='<h2 style="margin-top:22px">سؤال‌های کاربرگ ('+questions.length+')</h2>'+
  (questions.length?groups.map(g=>'<div class="question-group"><label class="question-group-title">عنوان کادر '+esc(g.type)+'</label><input value="'+esc(g.items[0].groupTitle||'')+'" oninput="updateGroupTitle(\''+esc(g.items[0].id)+'\',this.value)" placeholder="عنوانی برای این مجموعه سؤال بنویسید">'+
- '<div class="group-score-setting"><label>نمره کل این مجموعه</label><input type="number" min="0" step="0.25" inputmode="decimal" value="'+esc(g.items[0].groupScore??'')+'" oninput="updateGroupScore(\''+esc(g.items[0].id)+'\',this.value)" placeholder="مثلاً ۱٫۵"></div>'+
  g.items.map(q=>{const i=questions.indexOf(q);return '<div class="question" data-q="'+esc(q.id)+'">'+
  '<div class="qtop"><strong>سؤال '+(i+1)+'</strong><span class="qtype">'+esc(q.type)+'</span><button class="smallbtn danger" onclick="removeQ(\''+esc(q.id)+'\')">حذف سؤال</button></div>'+
+ '<div class="question-score-setting"><label>نمره این سؤال</label><input type="number" min="0" step="0.25" inputmode="decimal" value="'+esc(q.score??'')+'" oninput="updateQ(\\''+esc(q.id)+'\\',\\'score\\',this.value)" placeholder="مثلاً ۱٫۵"></div>'+
  '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea>'+
  (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"></div>').join('')+'</div>':'')+
  '</div>';}).join('')+'</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
 function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupTitle=v;}
-function updateGroupScore(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupScore=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
 function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,questions:JSON.parse(JSON.stringify(questions))};}
@@ -286,10 +286,10 @@ function makePreview(){
  const groups=[];
  s.questions.forEach((q,i)=>{
   let g=groups[groups.length-1];
-  if(!g||g.type!==q.type){g={type:q.type,title:q.groupTitle||'',score:q.groupScore??'',items:[]};groups.push(g);}
+  if(!g||g.type!==q.type){g={type:q.type,title:q.groupTitle||'',items:[]};groups.push(g);}
   g.items.push({q,index:i});
  });
- let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span>'+(g.score!==''?'<span class="print-group-score">نمره: '+esc(g.score)+'</span>':'')+'</div>'+
+ let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span></div>'+
  g.items.map(({q,index},itemIndex)=>{
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
@@ -297,7 +297,7 @@ function makePreview(){
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
-  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="qtext">'+esc(q.text||'')+'</div>'+extra+'</div></div>';
+  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div>'+(q.score!==undefined&&q.score!==''?'<span class="print-question-score">نمره: '+esc(q.score)+'</span>':'')+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah">بسمه تعالی</div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
