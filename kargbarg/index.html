@@ -162,7 +162,7 @@ function renderQuestions(){
  $('questions').innerHTML='<h2 style="margin-top:22px">سؤال‌های کاربرگ ('+questions.length+')</h2>'+
  (questions.length?questions.map((q,i)=>'<div class="question" data-q="'+esc(q.id)+'">'+
  '<div class="qtop"><strong>سؤال '+(i+1)+'</strong><span class="qtype">'+esc(q.type)+'</span><button class="smallbtn danger" onclick="removeQ(\''+esc(q.id)+'\')">حذف سؤال</button></div>'+
- '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="متن سؤال را بنویسید...">'+esc(q.text)+'</textarea>'+
+ '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: نام بزرگ‌ترین کلن بازی انیمال راش .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea>'+
  (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"></div>').join('')+'</div>':'')+
  '<label>بارم (اختیاری)</label><input inputmode="decimal" value="'+esc(q.marks)+'" oninput="updateQ(\''+esc(q.id)+'\',\'marks\',this.value)" placeholder="مثلاً ۲">'+
  '</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
