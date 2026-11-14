@@ -1,4 +1,4 @@
-const CACHE_NAME = "kargbarg-school-v3";
+const CACHE_NAME = "kargbarg-school-v4";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 const APP_BASE = new URL("./", self.location.href);
 const APP_INDEX = new URL("./index.html", self.location.href).href;
@@ -51,7 +51,25 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Cache only the four known static app files. Never cache arbitrary pages,
+  // Always refresh the HTML document from the network when online, so published
+  // interface fixes are not hidden by a previously cached copy.
+  if (url.href === APP_INDEX) {
+    event.respondWith(
+      fetch(request).then(response => {
+        if (response.ok && response.type === "basic") {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => {});
+        }
+        return response;
+      }).catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        return (await cache.match(request)) || (await cache.match("./"));
+      })
+    );
+    return;
+  }
+
+  // Cache only the remaining known static app files. Never cache arbitrary pages,
   // query-driven URLs, or user-specific responses.
   if (!APP_FILE_URLS.has(url.href)) return;
 
