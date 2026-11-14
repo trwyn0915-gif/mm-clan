@@ -54,14 +54,14 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .hidden{display:none!important}
 .empty{padding:22px;text-align:center;border:1px dashed #9eb7b9;border-radius:14px;color:var(--muted)}
 #previewArea{background:white;border:1px solid #9aabad;border-radius:8px;padding:clamp(14px,3vw,30px);color:#172b36}
-.paper-head{text-align:center;border:2px solid var(--teal-dark);padding:12px;margin-bottom:14px}
-.paper-head h2{font-size:1.35rem;margin:0 0 8px;color:#142f35}
-.paper-subtitle{font-weight:800;font-size:.95rem}
-.paper-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #60777a;margin:12px 0 18px}
-.paper-meta div{padding:9px 10px;border-bottom:1px solid #b4c3c4;font-size:.9rem;min-height:42px}
-.paper-meta div:nth-child(odd){border-left:1px solid #b4c3c4}
+.paper-head{text-align:center;border:1px solid #80999b;padding:5px 9px;margin-bottom:7px}
+.paper-head h2{font-size:1.15rem;margin:0;color:#142f35;line-height:1.5}
+.paper-subtitle{display:none}
+.paper-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #9aabad;margin:6px 0 10px}
+.paper-meta div{padding:4px 7px;border-bottom:1px solid #d0dada;font-size:.82rem;min-height:0;line-height:1.5}
+.paper-meta div:nth-child(odd){border-left:1px solid #d0dada}
 .paper-meta div:nth-last-child(-n+2){border-bottom:0}
-.paper-meta .student-name{grid-column:1/-1;border-left:0!important;font-size:13pt;font-weight:900;min-height:52px}
+.paper-meta .student-name{grid-column:1/-1;border-left:0!important;font-size:11pt;font-weight:900;min-height:0;padding:5px 7px}
 .paper-section-title{background:#b8efea;border:1px solid #4c8d89;padding:7px 10px;font-weight:900;margin:18px 0 8px;font-size:1rem}
 .printq{display:grid;grid-template-columns:32px 1fr;gap:6px;padding:10px 4px;border-bottom:1px solid #d7e0e0;break-inside:avoid;line-height:2}
 .printq .num{font-weight:900;color:var(--teal-dark)}
@@ -70,7 +70,8 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .print-options{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;margin:8px 0 0}
 .print-option{font-size:.93rem}
 .answer-lines{height:76px;margin-top:8px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,#aebabb 30px,#aebabb 31px)}
-.truefalse{margin-top:8px;display:flex;gap:25px;flex-wrap:wrap}
+.truefalse{margin-top:5px;display:flex;direction:rtl;justify-content:flex-start;align-items:center;text-align:right;width:100%;gap:18px;flex-wrap:wrap}
+.truefalse span{display:inline-flex;direction:rtl;align-items:center;gap:4px;white-space:nowrap}
 .blank-line{border-bottom:1px dotted #53696b;height:30px;margin-top:6px}
 .paper-foot{display:flex;justify-content:space-between;margin-top:25px;padding-top:10px;border-top:1px solid #9aabad;font-size:.85rem}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
@@ -85,11 +86,12 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #builder,#homePanel,#listPanel{display:none!important}
  #previewPanel{display:block!important}
  #previewArea{border:0;border-radius:0;padding:0;font-size:14pt}
- .paper-head{border-width:2.5px;padding:14px;margin-bottom:16px}
- .paper-head h2{font-size:19pt!important;font-weight:900!important;line-height:1.7}
- .paper-subtitle{font-size:13pt;font-weight:900}
- .paper-meta{margin:14px 0 20px}
- .paper-meta div{font-size:12.5pt!important;font-weight:800;padding:10px;min-height:48px}
+ .paper-head{border-width:1.5px;padding:5px 9px;margin-bottom:7px}
+ .paper-head h2{font-size:16pt!important;font-weight:900!important;line-height:1.5}
+ .paper-subtitle{display:none}
+ .paper-meta{margin:6px 0 10px}
+ .paper-meta div{font-size:11.5pt!important;font-weight:800;padding:5px 7px;min-height:0;line-height:1.5}
+ .paper-meta .student-name{font-size:12pt!important;padding:5px 7px}
  .paper-section-title{background:#b8efea!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
  .printq{break-inside:avoid;grid-template-columns:38px 1fr;gap:8px;padding:12px 4px;line-height:2.15;font-size:14pt}
  .printq .num{font-size:15pt;font-weight:900}
@@ -239,7 +241,7 @@ function makePreview(){
  let questionHtml=s.questions.map((q,i)=>{
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
-  if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>□ صحیح</span><span>□ غلط</span></div>';
+  if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
   // برای جای خالی، دبیر نقطه‌چین را داخل متن جمله می‌نویسد؛ خط جداگانه‌ای زیر سؤال چاپ نمی‌شود.
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
   return '<div class="printq"><div class="num">'+(i+1+'.')+'</div><div class="qbody"><div class="qtext">'+esc(q.text||'')+(q.marks?' <small>('+esc(q.marks)+' نمره)</small>':'')+'</div>'+extra+'</div></div>';
