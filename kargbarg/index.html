@@ -150,9 +150,6 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="teacher">نام دبیر</label><input id="teacher" placeholder="نام دبیر"></div>
 <div style="grid-column:1/-1;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7fbfb;margin-top:8px">
 <strong>مشخصات مدرسه</strong>
-<p class="muted" style="margin:5px 0 10px">یکی از دو روش زیر را انتخاب کنید: یا شهر و مدرسه را یکجا بنویسید، یا هرکدام را جداگانه وارد کنید.</p>
-<label for="schoolFull">نام شهر و مدرسه (یکجا)</label><input id="schoolFull" placeholder="مثلاً: شهرستان آق‌قلا، مدرسه شهید عبدالرحمان حبیب‌لی">
-<div style="text-align:center;color:var(--muted);font-weight:800;margin:8px">یا جداگانه</div>
 <div class="fields" style="padding:0">
 <div><label for="city">نام شهر یا شهرستان</label><input id="city" placeholder="مثلاً: شهرستان آق‌قلا"></div>
 <div><label for="school">نام مدرسه</label><input id="school" placeholder="مثلاً: شهید عبدالرحمان حبیب‌لی"></div>
@@ -272,8 +269,8 @@ function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(
 function updateGroupScore(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupScore=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
-function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,schoolFull:$('schoolFull').value,city:$('city').value,school:$('school').value,questions:JSON.parse(JSON.stringify(questions))};}
-function getSchoolText(s){const full=(s.schoolFull||'').trim();if(full)return full;const city=(s.city||'').trim(),school=(s.school||'').trim();return [city,school?('مدرسه '+school):''].filter(Boolean).join('، ');}
+function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,city:$('city').value,school:$('school').value,questions:JSON.parse(JSON.stringify(questions))};}
+function getSchoolText(s){const city=(s.city||'').trim(),school=(s.school||'').trim();return [city,school?('مدرسه '+school):''].filter(Boolean).join('، ');}
 function readSaved(){try{return JSON.parse(localStorage.getItem('worksheet_saves')||'[]');}catch(e){return[];}}
 function saveSheet(){
  if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
@@ -287,7 +284,7 @@ function showSaved(){
 }
 function loadSheet(i){
  const s=saved[i];if(!s)return;
- ['title','grade','teacher','date','duration','chapters','schoolFull','city','school'].forEach(k=>$(k).value=s[k]||'');
+ ['title','grade','teacher','date','duration','chapters','city','school'].forEach(k=>$(k).value=s[k]||'');
  questions=Array.isArray(s.questions)?s.questions:[];
  renderQuestions();show('builder');
 }
