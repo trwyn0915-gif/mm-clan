@@ -68,7 +68,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .exam-info{grid-column:1;grid-row:1;border-right:1px solid #000;text-align:right;direction:rtl}
 .exam-bismillah{grid-column:2;grid-row:1;border-right:1px solid #000;text-align:center;align-items:center;font-size:1rem!important;font-weight:900!important;direction:rtl}
 .education-name{font-size:.72em;line-height:1.5;white-space:nowrap}
-.school-name{font-size:.78em;line-height:1.5;white-space:nowrap}
+.school-name{font-size:.78em;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
 .exam-student{grid-column:3;grid-row:1;text-align:right;direction:rtl}\n.exam-chapters{grid-column:1/-1;grid-row:2;border-top:1px solid #000;text-align:right;direction:rtl;min-height:30px}
 .exam-duration{font-size:.8rem;font-weight:800}
 .paper-head{display:none}
@@ -108,7 +108,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .exam-top>div{padding:5px 7px;font-size:11pt;color:#000}
  .exam-bismillah{font-size:13pt!important}
 .education-name{font-size:9pt;line-height:1.5}
-.school-name{font-size:10pt;line-height:1.5}
+.school-name{font-size:10pt;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
  .exam-duration{font-size:10.5pt}
  .paper-meta{display:none!important}
  .paper-section-title{background:#fff!important;color:#000!important;border:1px solid #000!important;font-size:15pt;font-weight:900;padding:9px 12px;margin:20px 0 10px}
@@ -148,6 +148,15 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="title">عنوان درس یا کاربرگ</label><input id="title" placeholder="برای نمونه: علوم تجربی"></div>
 <div><label for="grade">پایه / کلاس</label><input id="grade" placeholder="برای نمونه: پایه هفتم"></div>
 <div><label for="teacher">نام دبیر</label><input id="teacher" placeholder="نام دبیر"></div>
+<div style="grid-column:1/-1;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7fbfb;margin-top:8px">
+<strong>مشخصات مدرسه</strong>
+<p class="muted" style="margin:5px 0 10px">یکی از دو روش زیر را انتخاب کنید: یا شهر و مدرسه را یکجا بنویسید، یا هرکدام را جداگانه وارد کنید.</p>
+<label for="schoolFull">نام شهر و مدرسه (یکجا)</label><input id="schoolFull" placeholder="مثلاً: شهرستان آق‌قلا، مدرسه شهید عبدالرحمان حبیب‌لی">
+<div style="text-align:center;color:var(--muted);font-weight:800;margin:8px">یا جداگانه</div>
+<div class="fields" style="padding:0">
+<div><label for="city">نام شهر یا شهرستان</label><input id="city" placeholder="مثلاً: شهرستان آق‌قلا"></div>
+<div><label for="school">نام مدرسه</label><input id="school" placeholder="مثلاً: شهید عبدالرحمان حبیب‌لی"></div>
+</div></div>
 <div><label for="date">تاریخ</label><input id="date" placeholder="۱۴۰۵/۰۸/۲۴"></div>
 <div><label for="duration">مدت زمان آزمون</label><input id="duration" placeholder="مثلاً ۷۰ دقیقه"></div>
 <div><label for="chapters">فصل‌های مورد آزمون</label><textarea id="chapters" placeholder="مثلاً فصل اول و دوم"></textarea></div>
@@ -263,7 +272,8 @@ function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(
 function updateGroupScore(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupScore=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
-function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,questions:JSON.parse(JSON.stringify(questions))};}
+function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,schoolFull:$('schoolFull').value,city:$('city').value,school:$('school').value,questions:JSON.parse(JSON.stringify(questions))};}
+function getSchoolText(s){const full=(s.schoolFull||'').trim();if(full)return full;const city=(s.city||'').trim(),school=(s.school||'').trim();return [city,school?('مدرسه '+school):''].filter(Boolean).join('، ');}
 function readSaved(){try{return JSON.parse(localStorage.getItem('worksheet_saves')||'[]');}catch(e){return[];}}
 function saveSheet(){
  if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
@@ -277,7 +287,7 @@ function showSaved(){
 }
 function loadSheet(i){
  const s=saved[i];if(!s)return;
- ['title','grade','teacher','date','duration','chapters'].forEach(k=>$(k).value=s[k]||'');
+ ['title','grade','teacher','date','duration','chapters','schoolFull','city','school'].forEach(k=>$(k).value=s[k]||'');
  questions=Array.isArray(s.questions)?s.questions:[];
  renderQuestions();show('builder');
 }
@@ -303,7 +313,7 @@ function makePreview(){
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
   return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div>'+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
- $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">آموزش و پرورش شهرستان آق قلا</strong><strong class="school-name">شهید عبدالرحمان حبیب لی</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
+ $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
