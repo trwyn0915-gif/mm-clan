@@ -67,6 +67,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .exam-top>div{padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:.84rem;font-weight:800;min-width:0}
 .exam-info{grid-column:1;grid-row:1;border-right:1px solid #000;text-align:right;direction:rtl}
 .exam-bismillah{grid-column:2;grid-row:1;border-right:1px solid #000;text-align:center;align-items:center;font-size:1rem!important;font-weight:900!important;direction:rtl}
+.education-name{font-size:.72em;line-height:1.5;white-space:nowrap}
 .school-name{font-size:.78em;line-height:1.5;white-space:nowrap}
 .exam-student{grid-column:3;grid-row:1;text-align:right;direction:rtl}\n.exam-chapters{grid-column:1/-1;grid-row:2;border-top:1px solid #000;text-align:right;direction:rtl;min-height:30px}
 .exam-duration{font-size:.8rem;font-weight:800}
@@ -106,6 +107,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .exam-student{grid-column:3;grid-row:1;direction:rtl}\n .exam-chapters{grid-column:1/-1;grid-row:2;border-top:1px solid #000;text-align:right;direction:rtl;padding:4px 7px!important;font-size:10.5pt!important}
  .exam-top>div{padding:5px 7px;font-size:11pt;color:#000}
  .exam-bismillah{font-size:13pt!important}
+.education-name{font-size:9pt;line-height:1.5}
 .school-name{font-size:10pt;line-height:1.5}
  .exam-duration{font-size:10.5pt}
  .paper-meta{display:none!important}
@@ -301,7 +303,7 @@ function makePreview(){
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
   return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'"><div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div>'+'</div>'+extra+'</div></div>';
  }).join('')+'</div>').join('');
- $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="school-name">شهید عبدالرحمان حبیب لی</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
+ $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">آموزش و پرورش شهرستان آق قلا</strong><strong class="school-name">شهید عبدالرحمان حبیب لی</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
  show('previewPanel');
