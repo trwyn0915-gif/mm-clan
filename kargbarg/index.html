@@ -89,6 +89,9 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .blank-line{border-bottom:1px dotted #53696b;height:30px;margin-top:6px}
 .paper-foot{display:flex;justify-content:space-between;margin-top:25px;padding-top:10px;border-top:1px solid #9aabad;font-size:.85rem}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
+.creator-panel-link{display:flex;align-items:center;justify-content:center;width:min(100%,420px);min-height:56px;margin:14px auto 4px;padding:12px 18px;border:2px solid var(--teal-dark);border-radius:15px;background:var(--teal-dark);color:#fff;text-decoration:none;font-size:1rem;font-weight:900;box-shadow:0 5px 14px #075b6226}
+.creator-panel-link:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
+.creator-panel-link:active{transform:scale(.99)}
 @media(min-width:620px){.home-grid{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr 1fr}.actions.two{grid-template-columns:1fr 1fr}.typegrid{grid-template-columns:repeat(4,1fr)}}
 @media print{
  @page{size:A4;margin:9mm 9mm 14mm}\n @page{@bottom-center{content:"صفحه " counter(page);font-family:Tahoma,Arial,sans-serif;font-size:9pt;color:#000}}
@@ -183,7 +186,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div id="previewArea"></div>
 <p class="muted no-print">برای دریافت فایل، در پنجره چاپ گزینه ذخیره به‌صورت PDF را انتخاب کنید.</p>
 </section>
-<footer>کاربرگ‌ساز مدرسه</footer>
+<footer>کاربرگ‌ساز مدرسه
+<a class="creator-panel-link" href="https://B2n.ir/rm3914">پنل سازنده سایت</a>
+</footer>
 </main>
 <script>
 let questions=[],saved=[];
