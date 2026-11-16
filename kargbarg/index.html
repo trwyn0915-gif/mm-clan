@@ -178,19 +178,14 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div id="questions"></div>
 <div class="actions two">
 <button class="primary" onclick="saveSheet()">ذخیره کاربرگ</button>
-<button class="secondary-btn" onclick="makePreview()">پیش‌نمایش و چاپ</button>
+<button class="secondary-btn" onclick="printSheet()">چاپ یا ذخیره PDF</button>
 </div>
 </section>
 <section class="panel hidden no-print" id="listPanel">
 <h2>کاربرگ‌های ذخیره‌شده</h2><div id="savedList"></div>
 </section>
 <section class="panel hidden" id="previewPanel">
-<div class="no-print actions two" style="margin-bottom:16px">
-<button class="primary" onclick="window.print()">چاپ یا ذخیره PDF</button>
-<button class="secondary-btn" onclick="show('builder')">ادامه ویرایش</button>
-</div>
 <div id="previewArea"></div>
-<p class="muted no-print">برای دریافت فایل، در پنجره چاپ گزینه ذخیره به‌صورت PDF را انتخاب کنید.</p>
 </section>
 <footer>کاربرگ‌ساز مدرسه
 <a class="creator-panel-link" href="https://trwyn0915-gif.github.io/mm-clan-site-2026/">پنل سازنده سایت</a>
@@ -324,7 +319,10 @@ function makePreview(){
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
  '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
- show('previewPanel');
+}
+function printSheet(){
+ makePreview();
+ if(questions.length)window.print();
 }
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
