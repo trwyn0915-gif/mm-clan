@@ -644,6 +644,35 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  }
 }
 </style>
+
+<style id="matching-print-explicit-dots-v26">
+/* Explicit dots in the print markup: first grid child is the right column, second is left. */
+.matching-print-item{position:relative!important}
+.matching-print-item .matching-print-dot{
+ display:block!important;
+ position:absolute!important;
+ top:50%!important;
+ transform:translateY(-50%)!important;
+ font-size:8px!important;
+ line-height:1!important;
+ width:10px!important;
+ text-align:center!important;
+}
+.matching-print-side:first-child .matching-print-item .matching-print-dot{
+ left:1px!important;
+ right:auto!important;
+}
+.matching-print-side:last-child .matching-print-item .matching-print-dot{
+ right:1px!important;
+ left:auto!important;
+}
+.matching-print-item::before,.matching-print-item::after{content:none!important}
+@media print{
+ .matching-print-item .matching-print-dot{display:block!important}
+ .matching-print-side:first-child .matching-print-item .matching-print-dot{left:1px!important;right:auto!important}
+ .matching-print-side:last-child .matching-print-item .matching-print-dot{right:1px!important;left:auto!important}
+}
+</style>
 </head>
 <body>
 <header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>کاربرگ‌ساز آنلاین اتحادیه MM برای طراحی، ویرایش و چاپ آسان کاربرگ‌های آموزشی دبیران</p></div></header>
@@ -940,7 +969,7 @@ function makePreview(){
   if(q.type==='وصل‌کردنی'){
    const left=Array.isArray(q.leftItems)?q.leftItems:['','',''],right=Array.isArray(q.rightItems)?q.rightItems:['','',''];
    const letters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر'];
-   const side=(items,title,isLeft)=>'<div class="matching-print-side"><div class="matching-print-title">'+title+'</div>'+items.map((value,j)=>'<div class="matching-print-item"><span class="matching-print-mark">'+(isLeft?(j+1).toLocaleString('fa-IR'):letters[j]||(''+(j+1)))+')</span><span class="matching-print-text">'+renderMathText(value||'........................')+'</span></div>').join('')+'</div>';
+   const side=(items,title,isLeft)=>'<div class="matching-print-side"><div class="matching-print-title">'+title+'</div>'+items.map((value,j)=>'<div class="matching-print-item"><span class="matching-print-mark">'+(isLeft?(j+1).toLocaleString('fa-IR'):letters[j]||(''+(j+1)))+')</span><span class="matching-print-text">'+renderMathText(value||'........................')+'</span><span class="matching-print-dot" aria-hidden="true">●</span></div>').join('')+'</div>';
    extra='<div class="matching-print">'+side(left,'ستون راست',true)+side(right,'ستون چپ',false)+'</div>';
   }
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
