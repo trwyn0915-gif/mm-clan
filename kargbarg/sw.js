@@ -1,10 +1,11 @@
-const CACHE_NAME = "kargbarg-school-v23";
+const CACHE_NAME = "kargbarg-school-v24";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 const APP_BASE = new URL("./", self.location.href);
 const APP_INDEX = new URL("./index.html", self.location.href).href;
 const APP_FILE_URLS = new Set(APP_FILES.map(file => new URL(file, self.location.href).href));
 
 self.addEventListener("install", event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(APP_FILES))
@@ -13,6 +14,7 @@ self.addEventListener("install", event => {
 });
 
 self.addEventListener("activate", event => {
+  event.waitUntil(self.clients.claim());
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
