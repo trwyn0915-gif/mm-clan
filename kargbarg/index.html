@@ -221,8 +221,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <h2>سامانه طراحی کاربرگ</h2>
 <p class="intro">کاربرگ موردنظر خود را بسازید، سؤال‌ها را مرتب کنید و نسخه آماده چاپ دریافت کنید.</p>
 <div class="home-grid">
-<button class="home-action" onclick="newSheet()">ساخت کاربرگ جدید<small>ایجاد برگه با سؤال‌های متنوع</small></button>
-<button class="home-action secondary" onclick="showSaved()">کاربرگ‌های ذخیره‌شده<small>مشاهده و ادامه ویرایش برگه‌ها</small></button>
+<button id="createSheetButton" class="home-action" type="button">ساخت کاربرگ جدید<small>ایجاد برگه با سؤال‌های متنوع</small></button>
+<button id="savedSheetsButton" class="home-action secondary" type="button">کاربرگ‌های ذخیره‌شده<small>مشاهده و ادامه ویرایش برگه‌ها</small></button>
 </div>
 </section>
 <section class="panel hidden" id="builder">
@@ -260,7 +260,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div id="questions"></div>
 <div class="actions">
 <button class="primary" onclick="printSheet()">چاپ یا ذخیره PDF</button>
-<button class="secondary-btn" onclick="saveSheet()">ذخیره کاربرگ</button>
+<button id="saveSheetButton" class="secondary-btn" type="button">ذخیره کاربرگ</button>
 <button class="secondary-btn" type="button" onclick="setBuilderStep(1)">بازگشت به مشخصات</button>
 </div>
 </div>
@@ -514,6 +514,9 @@ function printSheet(){
  makePreview();
  if(questions.length)window.print();
 }
+document.getElementById('createSheetButton')?.addEventListener('click',newSheet);
+document.getElementById('savedSheetsButton')?.addEventListener('click',showSaved);
+document.getElementById('saveSheetButton')?.addEventListener('click',saveSheet);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
