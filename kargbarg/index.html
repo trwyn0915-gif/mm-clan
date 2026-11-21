@@ -673,6 +673,37 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .matching-print-side:last-child .matching-print-item .matching-print-dot{right:1px!important;left:auto!important}
 }
 </style>
+
+<style id="matching-dots-face-each-other-v27">
+/* Both matching columns use identical row heights; dots sit on the two inner edges. */
+#previewArea .matching-print{direction:rtl!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8%!important;align-items:start!important}
+#previewArea .matching-print-side{display:flex!important;flex-direction:column!important;min-width:0!important}
+#previewArea .matching-print-item{
+ position:relative!important;display:flex!important;flex:0 0 34px!important;
+ height:34px!important;min-height:34px!important;max-height:34px!important;
+ box-sizing:border-box!important;align-items:center!important;
+ direction:rtl!important;flex-direction:row!important;justify-content:flex-start!important;
+ text-align:right!important;white-space:nowrap!important;overflow:hidden!important;
+ padding:3px 18px 3px 3px!important;margin:0!important;gap:5px!important;
+}
+#previewArea .matching-print-side:first-child .matching-print-item .matching-print-dot{
+ position:absolute!important;display:block!important;left:1px!important;right:auto!important;
+ top:50%!important;transform:translateY(-50%)!important;width:10px!important;text-align:center!important;
+}
+#previewArea .matching-print-side:last-child .matching-print-item .matching-print-dot{
+ position:absolute!important;display:block!important;right:1px!important;left:auto!important;
+ top:50%!important;transform:translateY(-50%)!important;width:10px!important;text-align:center!important;
+}
+#previewArea .matching-print-item::before,#previewArea .matching-print-item::after{content:none!important;display:none!important}
+#previewArea .matching-print-mark{flex:0 0 auto!important;direction:rtl!important;unicode-bidi:isolate!important}
+#previewArea .matching-print-text{flex:0 1 auto!important;min-width:0!important;max-width:70%!important;direction:rtl!important;text-align:right!important;unicode-bidi:plaintext!important}
+@media print{
+ #previewArea .matching-print{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8%!important}
+ #previewArea .matching-print-item{height:34px!important;min-height:34px!important;max-height:34px!important;flex-basis:34px!important}
+ #previewArea .matching-print-side:first-child .matching-print-item .matching-print-dot{left:1px!important;right:auto!important}
+ #previewArea .matching-print-side:last-child .matching-print-item .matching-print-dot{right:1px!important;left:auto!important}
+}
+</style>
 </head>
 <body>
 <header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>کاربرگ‌ساز آنلاین اتحادیه MM برای طراحی، ویرایش و چاپ آسان کاربرگ‌های آموزشی دبیران</p></div></header>
