@@ -167,6 +167,14 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #previewArea .compare-circle{width:24.65px;height:24.65px;min-width:24.65px;max-width:24.65px;max-height:24.65px;flex:0 0 24.65px}
 }
 
+
+.fraction-tools{display:flex;justify-content:flex-start;gap:8px;margin:5px 0 10px}
+.fraction-btn{min-height:38px;padding:5px 14px;background:#e7f6f4;color:#075b62;border:1px solid #9bcac7;font-size:.88rem}
+.fraction-hint{font-size:.78rem;color:#526873;margin:2px 0 8px}
+.print-fraction{display:inline-flex;direction:ltr;vertical-align:middle;align-items:center;justify-content:center;text-align:center;line-height:1.05;margin:0 3px;min-width:1.15em}
+.print-fraction .fraction-stack{display:inline-flex;flex-direction:column;align-items:center;justify-content:center}
+.print-fraction .fraction-top{display:block;padding:0 3px 2px;border-bottom:1px solid currentColor}
+.print-fraction .fraction-bottom{display:block;padding:2px 3px 0}
 </style>
 </head>
 <body>
@@ -296,10 +304,24 @@ function renderQuestions(){
  g.items.map(q=>{const i=questions.indexOf(q);return '<div class="question" data-q="'+esc(q.id)+'">'+
  '<div class="qtop"><strong>سؤال '+(i+1)+'</strong><span class="qtype">'+esc(q.type)+'</span><button class="smallbtn danger" onclick="removeQ(\''+esc(q.id)+'\')">حذف سؤال</button></div>'+
 
- '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea>'+
- (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"></div>').join('')+'</div>':'')+
- (q.type==='مقایسه'?'<div class="fields"><div><label>عبارت یا عدد اول</label><input type="text" value="'+esc(q.leftText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'leftText\',this.value)" placeholder="مثلاً ۸ یا آب"></div><div><label>عبارت یا عدد دوم</label><input type="text" value="'+esc(q.rightText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'rightText\',this.value)" placeholder="مثلاً ۵ یا بخار آب"></div></div><p class="muted">دانش‌آموز باید علامت مناسب را در دایره قرار دهد.</p>':'')+
+ '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'text\')">＋ کسر</button></div><p class="fraction-hint">برای نوشتن کسر، دکمه «کسر» را بزنید.</p>'+
+ (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+renderMathText(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'option\','+j+')">＋ کسر</button></div></div>').join('')+'</div>':'')+
+ (q.type==='مقایسه'?'<div class="fields"><div><label>عبارت یا عدد اول</label><input type="text" value="'+esc(q.leftText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'leftText\',this.value)" placeholder="مثلاً ۸ یا آب"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'leftText\')">＋ کسر</button></div></div><div><label>عبارت یا عدد دوم</label><input type="text" value="'+esc(q.rightText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'rightText\',this.value)" placeholder="مثلاً ۵ یا بخار آب"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'rightText\')">＋ کسر</button></div></div></div><p class="muted">دانش‌آموز باید علامت مناسب را در دایره قرار دهد.</p>':'')+
  '</div>';}).join('')+'</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
+}
+function insertFraction(id,field,index){
+ const q=questions.find(x=>String(x.id)===String(id));if(!q)return;
+ const numerator=prompt('صورت کسر را وارد کنید:');if(numerator===null||!numerator.trim())return;
+ const denominator=prompt('مخرج کسر را وارد کنید:');if(denominator===null||!denominator.trim())return;
+ const token='[[frac:'+numerator.trim()+'|'+denominator.trim()+']]';
+ if(field==='option'){
+  if(!Array.isArray(q.options))q.options=['','','',''];
+  q.options[index]=String(q.options[index]||'')+token;
+ }else q[field]=String(q[field]||'')+token;
+ renderQuestions();
+}
+function renderMathText(value){
+ return esc(value).replace(/\\[\\[frac:([^|\\]]*)\\|([^\\]]*)\\]\\]/g,(match,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
 function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupTitle=v;}
@@ -340,13 +362,13 @@ function makePreview(){
  let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group'+(g.type==='مقایسه'?' compare-group':'')+'"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span>'+(g.items[0].q.groupScore!==undefined&&g.items[0].q.groupScore!==''?'<span class="print-group-score">نمره: '+esc(g.items[0].q.groupScore)+'</span>':'')+'</div>'+
  g.items.map(({q,index},itemIndex)=>{
   let extra='';
-  if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
+  if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+renderMathText(o)+'</div>').join('')+'</div>';
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
-  if(q.type==='مقایسه')extra='<div class="compare-print"><span>'+esc(q.leftText||'................')+'</span><span class="compare-circle"></span><span>'+esc(q.rightText||'................')+'</span></div>';
+  if(q.type==='مقایسه')extra='<div class="compare-print"><span>'+renderMathText(q.leftText||'................')+'</span><span class="compare-circle"></span><span>'+renderMathText(q.rightText||'................')+'</span></div>';
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
-  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه'?'': '<div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div></div>')+extra+'</div></div>';
+  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه'?'': '<div class="question-line"><div class="qtext">'+renderMathText(q.text||'')+'</div></div>')+extra+'</div></div>';
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
