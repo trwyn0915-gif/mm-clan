@@ -556,6 +556,76 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 }
 
 </style>
+
+<style id="matching-print-final-fix">
+/* Remove every decorative vertical rail and enforce Persian ordering. */
+#previewArea .matching-print-side,
+#previewArea .matching-print-side:first-child,
+#previewArea .matching-print-side:last-child{
+ border:0!important;
+ border-left:0!important;
+ border-right:0!important;
+ border-top:0!important;
+ border-bottom:0!important;
+ box-shadow:none!important;
+ outline:0!important;
+}
+#previewArea .matching-print-side::before,
+#previewArea .matching-print-side::after{
+ box-shadow:none!important;
+}
+#previewArea .matching-print-side:first-child::after,
+#previewArea .matching-print-side:last-child::after{
+ content:none!important;
+ display:none!important;
+}
+#previewArea .matching-print-side:first-child .matching-print-item,
+#previewArea .matching-print-side:last-child .matching-print-item{
+ direction:rtl!important;
+ flex-direction:row!important;
+ justify-content:flex-start!important;
+ text-align:right!important;
+ unicode-bidi:plaintext!important;
+}
+#previewArea .matching-print-side:first-child .matching-print-item{
+ padding-left:3px!important;
+ padding-right:17px!important;
+}
+#previewArea .matching-print-side:last-child .matching-print-item{
+ padding-right:17px!important;
+ padding-left:3px!important;
+}
+#previewArea .matching-print-side:first-child .matching-print-item::after{
+ left:auto!important;right:2px!important;
+}
+#previewArea .matching-print-side:last-child .matching-print-item::before{
+ right:auto!important;left:2px!important;
+}
+#previewArea .matching-print-item .matching-print-mark{
+ direction:rtl!important;
+ unicode-bidi:isolate!important;
+ text-align:right!important;
+}
+#previewArea .matching-print-item .matching-print-text{
+ direction:rtl!important;
+ unicode-bidi:plaintext!important;
+ text-align:right!important;
+}
+@media print{
+ #previewArea .matching-print-side,
+ #previewArea .matching-print-side:first-child,
+ #previewArea .matching-print-side:last-child{
+  border:0!important;box-shadow:none!important;outline:0!important;
+ }
+ #previewArea .matching-print-side:first-child::after,
+ #previewArea .matching-print-side:last-child::after{content:none!important;display:none!important}
+ #previewArea .matching-print-side:first-child .matching-print-item,
+ #previewArea .matching-print-side:last-child .matching-print-item{
+  direction:rtl!important;flex-direction:row!important;justify-content:flex-start!important;text-align:right!important;unicode-bidi:plaintext!important;
+ }
+}
+</style>
+
 </head>
 <body>
 <header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>کاربرگ‌ساز آنلاین اتحادیه MM برای طراحی، ویرایش و چاپ آسان کاربرگ‌های آموزشی دبیران</p></div></header>
