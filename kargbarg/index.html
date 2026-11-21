@@ -179,9 +179,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .matching-entry input{min-width:0;min-height:48px;padding:9px}
 .matching-entry button{min-height:48px;padding:7px 10px}
 .matching-print{display:grid;direction:rtl;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%;margin:0;column-gap:8%;row-gap:10px;padding:10px 12px}
-.matching-print-side{position:relative;min-width:0;padding:8px 10px;border:0;border-top:2px solid #000;border-bottom:2px solid #000}
-.matching-print-side:first-child{border-right:2px solid #000;border-left:0}
-.matching-print-side:last-child{border-left:2px solid #000;border-right:0}
+.matching-print-side{position:relative;min-width:0;padding:8px 10px;border:0!important;box-shadow:none!important;outline:0!important}
+.matching-print-side:first-child,.matching-print-side:last-child{border:0!important;box-shadow:none!important;outline:0!important}
 .matching-print-title{position:relative;font-weight:900;text-align:center;padding-bottom:7px;margin-bottom:5px;border:0}
 .matching-print-title::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:#000}
 .matching-print-item{position:relative;display:flex;align-items:center;gap:7px;min-height:34px;padding:4px 2px;border:0;break-inside:avoid;page-break-inside:avoid;white-space:normal}
@@ -197,9 +196,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 @media print{
  .matching-editor{display:none}
  .matching-print{width:100%;margin:0;column-gap:8%;padding:8px 10px;break-inside:avoid;page-break-inside:avoid}
- .matching-print-side{border-top:2px solid #000;border-bottom:2px solid #000;padding:7px 9px}
- .matching-print-side:first-child{border-right:2px solid #000;border-left:0}
- .matching-print-side:last-child{border-left:2px solid #000;border-right:0}
+ .matching-print-side{border:0!important;box-shadow:none!important;outline:0!important;padding:7px 9px}
+ .matching-print-side:first-child,.matching-print-side:last-child{border:0!important;box-shadow:none!important;outline:0!important}
  .matching-print-item{min-height:30px;padding:4px 2px}
  .print-group:has(.matching-print) .matching-print{margin-bottom:0}
 }
