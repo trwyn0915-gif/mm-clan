@@ -212,6 +212,35 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #previewArea .printq .qtext{font-weight:900!important}
  #previewArea .print-option,#previewArea .truefalse{font-weight:800!important}
 }
+
+/* Matching question: keep both outer edges visible and leave the center open */
+.matching-print-side{
+ position:relative!important;
+ border-top:1px solid #000!important;
+ border-bottom:1px solid #000!important;
+ border-left:0!important;
+ border-right:0!important;
+}
+.matching-print-side:first-child::after{
+ content:"";
+ position:absolute;
+ top:-1px;
+ bottom:-1px;
+ right:0;
+ width:1.5px;
+ background:#000;
+ pointer-events:none;
+}
+.matching-print-side:last-child::after{
+ content:"";
+ position:absolute;
+ top:-1px;
+ bottom:-1px;
+ left:0;
+ width:1.5px;
+ background:#000;
+ pointer-events:none;
+}
 </style>
 </head>
 <body>
