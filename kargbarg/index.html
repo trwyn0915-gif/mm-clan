@@ -197,8 +197,19 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .compare-group.compare-count-4 .printq:nth-child(2n){border-right:1px solid #000}
 .compare-group.compare-count-4 .printq:nth-child(4n){border-right:0}
 .compare-group .qbody{display:flex;justify-content:center}
-.compare-group .compare-print{width:100%;justify-content:space-evenly;gap:10px;min-height:54px}
-@media print{.app-dialog-backdrop{display:none!important}.compare-group .printq{min-height:64px;padding:10px 6px}}
+.compare-group .compare-print{width:100%;justify-content:center;gap:9px;min-height:54px}
+.compare-group .compare-print>span:not(.compare-circle){flex:0 1 auto;max-width:44%;text-align:center;overflow-wrap:anywhere}
+.compare-group .compare-circle{flex:0 0 32px}
+#previewArea .printq .qtext{font-weight:900}
+#previewArea .print-option,#previewArea .truefalse{font-weight:800}
+@media print{
+ .app-dialog-backdrop{display:none!important}
+ .compare-group .printq{min-height:64px;padding:10px 6px}
+ #previewArea .compare-group .compare-print{justify-content:center;gap:7px}
+ #previewArea .compare-group .compare-circle{flex:0 0 24.65px}
+ #previewArea .printq .qtext{font-weight:900!important}
+ #previewArea .print-option,#previewArea .truefalse{font-weight:800!important}
+}
 </style>
 </head>
 <body>
