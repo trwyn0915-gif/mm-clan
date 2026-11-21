@@ -501,6 +501,60 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .matching-print-item{min-height:38px!important}
 }
 
+
+/* Matching worksheet: no heavy side rails; Persian RTL on both columns. */
+.matching-print-side,
+.matching-print-side:first-child,
+.matching-print-side:last-child{
+ border:0!important;
+ border-left:0!important;
+ border-right:0!important;
+ border-top:0!important;
+ border-bottom:0!important;
+}
+.matching-print-side:first-child .matching-print-item,
+.matching-print-side:last-child .matching-print-item{
+ direction:rtl!important;
+ flex-direction:row!important;
+ justify-content:flex-start!important;
+ text-align:right!important;
+ unicode-bidi:plaintext!important;
+}
+.matching-print-side:first-child .matching-print-item{
+ padding-left:17px!important;
+ padding-right:3px!important;
+}
+.matching-print-side:first-child .matching-print-item::after{
+ left:2px!important;
+ right:auto!important;
+}
+.matching-print-side:last-child .matching-print-item{
+ padding-right:17px!important;
+ padding-left:3px!important;
+}
+.matching-print-side:last-child .matching-print-item::before{
+ right:2px!important;
+ left:auto!important;
+}
+.matching-print-side:first-child .matching-print-item::before,
+.matching-print-side:last-child .matching-print-item::after{
+ content:none!important;
+}
+@media print{
+ .matching-print-side,
+ .matching-print-side:first-child,
+ .matching-print-side:last-child{
+  border:0!important;
+ }
+ .matching-print-side:first-child .matching-print-item,
+ .matching-print-side:last-child .matching-print-item{
+  direction:rtl!important;
+  flex-direction:row!important;
+  text-align:right!important;
+  unicode-bidi:plaintext!important;
+ }
+}
+
 </style>
 </head>
 <body>
