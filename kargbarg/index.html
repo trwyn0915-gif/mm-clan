@@ -624,6 +624,26 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 }
 </style>
 
+
+<style id="matching-dots-inner-edge-v25">
+/* Matching dots must face the gap between the two columns, never the page edges. */
+#previewArea .matching-print-side:first-child .matching-print-item::after{
+ left:auto!important;
+ right:2px!important;
+}
+#previewArea .matching-print-side:last-child .matching-print-item::before{
+ right:auto!important;
+ left:2px!important;
+}
+@media print{
+ #previewArea .matching-print-side:first-child .matching-print-item::after{
+  left:auto!important;right:2px!important;
+ }
+ #previewArea .matching-print-side:last-child .matching-print-item::before{
+  right:auto!important;left:2px!important;
+ }
+}
+</style>
 </head>
 <body>
 <header><div class="head-inner"><h1>کاربرگ‌ساز مدرسه</h1><p>کاربرگ‌ساز آنلاین اتحادیه MM برای طراحی، ویرایش و چاپ آسان کاربرگ‌های آموزشی دبیران</p></div></header>
