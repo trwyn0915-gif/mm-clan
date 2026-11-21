@@ -321,7 +321,7 @@ function insertFraction(id,field,index){
  renderQuestions();
 }
 function renderMathText(value){
- return esc(value).replace(/\\[\\[frac:([^|\\]]*)\\|([^\\]]*)\\]\\]/g,(match,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
+ return esc(value).replace(/\[\[frac:([^|\]]*)\|([^\]]*)\]\]/g,(match,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
 function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupTitle=v;}
