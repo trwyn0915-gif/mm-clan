@@ -185,6 +185,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .app-dialog p{margin:0 0 12px;color:#526873;font-size:.9rem}
 .app-dialog .dialog-actions{display:flex;gap:10px;margin-top:16px}
 .app-dialog .dialog-actions button{flex:1}
+ .builder-steps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}.builder-step{padding:12px 8px;text-align:center;border:1px solid var(--line);border-radius:12px;background:#f4f6f7;color:#526873;font-weight:800}.builder-step.active{background:#e4f4f2;border:2px solid #168078;color:#075b62}
 .date-picker-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;direction:rtl}.date-picker-grid label{font-size:.9rem;margin:10px 0 6px}.date-picker-grid select{min-width:0;padding:10px 5px;text-align:center;font-weight:800}@media(max-width:420px){.date-picker-grid{gap:6px}.date-picker-grid select{font-size:.9rem;padding:9px 3px}}.fraction-live-preview{display:flex;align-items:center;justify-content:center;min-height:84px;padding:10px;border:1px dashed #9eb7b9;border-radius:12px;margin-top:12px;font-size:1.25rem}
 .fraction-live-preview .print-fraction{font-size:1.25em}
 .compare-group.compare-count-2{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -224,7 +225,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 </div>
 </section>
 <section class="panel hidden" id="builder">
-<h2>مشخصات کاربرگ</h2>
+<div class="builder-steps"><div id="stepIndicator1" class="builder-step active">مرحله ۱: مشخصات کاربرگ</div><div id="stepIndicator2" class="builder-step">مرحله ۲: طراحی سؤال‌ها</div></div>
+<div id="builderStep1">
+<h2>مرحله اول: مشخصات کاربرگ</h2>
 <div class="fields">
 <div><label for="title">درس</label><select id="title"><option value="">انتخاب درس</option><option>فارسی</option><option>نگارش</option><option>ریاضی</option><option>علوم تجربی</option><option>مطالعات اجتماعی</option><option>قرآن</option><option>هدیه‌های آسمان</option><option>عربی</option><option>زبان انگلیسی</option><option>هنر</option><option>کار و فناوری</option><option>تفکر و سبک زندگی</option><option>پیام‌های آسمان</option><option>آمادگی دفاعی</option><option>زیست‌شناسی</option><option>فیزیک</option><option>شیمی</option><option>تاریخ</option><option>جغرافیا</option><option>اقتصاد</option><option>فلسفه</option><option>روان‌شناسی</option></select><button type="button" class="secondary-btn smallbtn" style="margin-top:8px" onclick="toggleOtherSubject()">بقیه موارد</button><input id="customSubject" class="hidden" style="margin-top:8px" placeholder="نام درس را وارد کنید"></div>
 <div><label for="grade">پایه / کلاس</label><select id="grade"><option value="">انتخاب پایه / کلاس</option><option>پیش‌دبستانی</option><option>پایه اول</option><option>پایه دوم</option><option>پایه سوم</option><option>پایه چهارم</option><option>پایه پنجم</option><option>پایه ششم</option><option>پایه هفتم</option><option>پایه هشتم</option><option>پایه نهم</option><option>پایه دهم</option><option>پایه یازدهم</option><option>پایه دوازدهم</option></select></div>
@@ -239,6 +242,10 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="duration">مدت زمان آزمون</label><select id="duration"><option value="">انتخاب مدت زمان</option><option value="۱۵ دقیقه">۱۵ دقیقه</option><option value="۲۰ دقیقه">۲۰ دقیقه</option><option value="۳۰ دقیقه">۳۰ دقیقه</option><option value="۴۰ دقیقه">۴۰ دقیقه</option><option value="۴۵ دقیقه">۴۵ دقیقه</option><option value="۶۰ دقیقه">۶۰ دقیقه</option><option value="۷۵ دقیقه">۷۵ دقیقه</option><option value="۹۰ دقیقه">۹۰ دقیقه</option><option value="۱۲۰ دقیقه">۱۲۰ دقیقه</option></select></div>
 <div><label for="chapters">فصل‌های مورد آزمون</label><textarea id="chapters" placeholder="مثلاً فصل اول و دوم"></textarea></div>
 </div>
+<div class="actions"><button class="primary" type="button" onclick="setBuilderStep(2)">ادامه: طراحی سؤال‌ها</button></div>
+</div>
+<div id="builderStep2" class="hidden">
+<h2>مرحله دوم: طراحی سؤال‌های کاربرگ</h2>
 <div class="panel" style="padding:16px;margin-top:20px;background:#f7fbfb">
 <h2>افزودن نوع سؤال</h2>
 <div class="typegrid">
@@ -252,6 +259,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div class="actions">
 <button class="primary" onclick="printSheet()">چاپ یا ذخیره PDF</button>
 <button class="secondary-btn" onclick="saveSheet()">ذخیره کاربرگ</button>
+<button class="secondary-btn" type="button" onclick="setBuilderStep(1)">بازگشت به مشخصات</button>
+</div>
 </div>
 </section>
 <section class="panel hidden no-print" id="listPanel">
@@ -317,7 +326,16 @@ window.addEventListener('popstate',()=>{
  }
  show(nextPanel,false);
 });
+function setBuilderStep(step){
+ const second=Number(step)===2;
+ $('builderStep1').classList.toggle('hidden',second);
+ $('builderStep2').classList.toggle('hidden',!second);
+ $('stepIndicator1').classList.toggle('active',!second);
+ $('stepIndicator2').classList.toggle('active',second);
+ window.scrollTo({top:0,behavior:'instant'});
+}
 function newSheet(){
+ setBuilderStep(1);
  questions=[];
  ['title','grade','teacher','date','duration','chapters'].forEach(x=>$(x).value='');
  $('customSubject').value='';$('customSubject').classList.add('hidden');
@@ -445,7 +463,7 @@ function loadSheet(i){
  if(subjectOption){$('title').value=subject;$('customSubject').value='';$('customSubject').classList.add('hidden');}
  else{$('title').value='';$('customSubject').value=subject;$('customSubject').classList.remove('hidden');}
  questions=Array.isArray(s.questions)?s.questions:[];
- renderQuestions();show('builder');
+ renderQuestions();show('builder');setBuilderStep(1);
 }
 function deleteSheet(i){
  showAppDialog('حذف کاربرگ','آیا از حذف این کاربرگ مطمئنی؟',[{label:'انصراف',kind:'secondary-btn'},{label:'حذف',kind:'danger',action:()=>{saved.splice(i,1);localStorage.setItem('worksheet_saves',JSON.stringify(saved));showSaved();}}]);
