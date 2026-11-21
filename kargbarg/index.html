@@ -369,9 +369,9 @@ function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',g
 function getSchoolText(s){const city=(s.city||'').trim(),school=(s.school||'').trim();return [city,school?('مدرسه '+school):''].filter(Boolean).join('، ');}
 function readSaved(){try{return JSON.parse(localStorage.getItem('worksheet_saves')||'[]');}catch(e){return[];}}
 function saveSheet(){
- if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
+ if(!questions.length){showAppDialog('هنوز سؤالی اضافه نشده','برای ذخیره کاربرگ، ابتدا یک سؤال اضافه کن.',[{label:'متوجه شدم',kind:'primary'}]);return;}
  saved=readSaved();const s=getSheet();s.savedAt=new Date().toLocaleString('fa-IR');saved.unshift(s);
- localStorage.setItem('worksheet_saves',JSON.stringify(saved));alert('کاربرگ ذخیره شد.');
+ localStorage.setItem('worksheet_saves',JSON.stringify(saved));showAppDialog('ذخیره شد','کاربرگ با موفقیت ذخیره شد.',[{label:'باشه',kind:'primary'}]);
 }
 function showSaved(){
  saved=readSaved();
@@ -385,7 +385,7 @@ function loadSheet(i){
  renderQuestions();show('builder');
 }
 function deleteSheet(i){
- if(confirm('این کاربرگ حذف شود؟')){saved.splice(i,1);localStorage.setItem('worksheet_saves',JSON.stringify(saved));showSaved();}
+ showAppDialog('حذف کاربرگ','آیا از حذف این کاربرگ مطمئنی؟',[{label:'انصراف',kind:'secondary-btn'},{label:'حذف',kind:'danger',action:()=>{saved.splice(i,1);localStorage.setItem('worksheet_saves',JSON.stringify(saved));showSaved();}}]);
 }
 function makePreview(){
  if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
