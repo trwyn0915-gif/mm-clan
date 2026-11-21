@@ -184,11 +184,13 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .matching-print-side:last-child{border-left:2px solid #000;border-right:0}
 .matching-print-title{position:relative;font-weight:900;text-align:center;padding-bottom:7px;margin-bottom:5px;border:0}
 .matching-print-title::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:#000}
-.matching-print-item{position:relative;display:flex;align-items:center;gap:7px;min-height:34px;padding:4px 2px;border:0;break-inside:avoid;page-break-inside:avoid}
-.matching-print-side:first-child .matching-print-item{padding-left:16px}
+.matching-print-item{position:relative;display:flex;align-items:center;gap:7px;min-height:34px;padding:4px 2px;border:0;break-inside:avoid;page-break-inside:avoid;white-space:normal}
+.matching-print-side:first-child .matching-print-item{padding-left:16px;justify-content:flex-end}
 .matching-print-side:first-child .matching-print-item::after{content:'●';position:absolute;left:3px;top:50%;transform:translateY(-50%);font-size:9px;line-height:1}
-.matching-print-side:last-child .matching-print-item{padding-right:16px}
+.matching-print-side:last-child .matching-print-item{padding-right:16px;justify-content:flex-start}
 .matching-print-side:last-child .matching-print-item::before{content:'●';position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:9px;line-height:1}
+.matching-print-item .matching-print-mark,.matching-print-item .matching-print-text{flex:0 0 auto;max-width:calc(100% - 30px)}
+.printq.matching-q{border-bottom:0!important;padding-bottom:4px!important}
 .matching-print-mark{font-weight:900;min-width:22px;flex:none}
 .matching-print-text{min-width:0;overflow-wrap:anywhere}
 @media(max-width:420px){.matching-editor{grid-template-columns:1fr}}
@@ -199,7 +201,6 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .matching-print-side:first-child{border-right:2px solid #000;border-left:0}
  .matching-print-side:last-child{border-left:2px solid #000;border-right:0}
  .matching-print-item{min-height:30px;padding:4px 2px}
- .print-group:has(.matching-print) .printq{border-bottom:0;padding-bottom:4px}
  .print-group:has(.matching-print) .matching-print{margin-bottom:0}
 }
 .fraction-tools{display:flex;justify-content:flex-start;gap:8px;margin:5px 0 10px}
@@ -581,7 +582,7 @@ function makePreview(){
   }
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
-  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه'?'': '<div class="question-line"><div class="qtext">'+renderMathText(q.text||'')+'</div></div>')+extra+'</div></div>';
+  return '<div class="printq'+(q.type==='وصل‌کردنی'?' matching-q':'')+'"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه'?'': '<div class="question-line"><div class="qtext">'+renderMathText(q.text||'')+'</div></div>')+extra+'</div></div>';
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
