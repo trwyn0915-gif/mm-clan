@@ -185,7 +185,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .app-dialog p{margin:0 0 12px;color:#526873;font-size:.9rem}
 .app-dialog .dialog-actions{display:flex;gap:10px;margin-top:16px}
 .app-dialog .dialog-actions button{flex:1}
-.fraction-live-preview{display:flex;align-items:center;justify-content:center;min-height:84px;padding:10px;border:1px dashed #9eb7b9;border-radius:12px;margin-top:12px;font-size:1.25rem}
+.date-picker-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;direction:rtl}.date-picker-grid label{font-size:.9rem;margin:10px 0 6px}.date-picker-grid select{min-width:0;padding:10px 5px;text-align:center;font-weight:800}@media(max-width:420px){.date-picker-grid{gap:6px}.date-picker-grid select{font-size:.9rem;padding:9px 3px}}.fraction-live-preview{display:flex;align-items:center;justify-content:center;min-height:84px;padding:10px;border:1px dashed #9eb7b9;border-radius:12px;margin-top:12px;font-size:1.25rem}
 .fraction-live-preview .print-fraction{font-size:1.25em}
 .compare-group.compare-count-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .compare-group.compare-count-3{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -224,7 +224,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="city">نام شهر یا شهرستان</label><input id="city" placeholder="مثلاً: شهرستان آق‌قلا"></div>
 <div><label for="school">نام مدرسه</label><input id="school" placeholder="مثلاً: شهید عبدالرحمان حبیب‌لی"></div>
 </div></div>
-<div><label for="date">تاریخ</label><input id="date" placeholder="۱۴۰۵/۰۸/۲۴"></div>
+<div><label for="date">تاریخ آزمون</label><input id="date" type="text" readonly placeholder="برای انتخاب تاریخ بزنید" onclick="openExamDatePicker()" style="cursor:pointer;background:#f8fbfb"><p class="fraction-hint">انتخاب تاریخ از تقویم شمسی</p></div>
 <div><label for="duration">مدت زمان آزمون</label><select id="duration"><option value="">انتخاب مدت زمان</option><option value="۱۵ دقیقه">۱۵ دقیقه</option><option value="۲۰ دقیقه">۲۰ دقیقه</option><option value="۳۰ دقیقه">۳۰ دقیقه</option><option value="۴۰ دقیقه">۴۰ دقیقه</option><option value="۴۵ دقیقه">۴۵ دقیقه</option><option value="۶۰ دقیقه">۶۰ دقیقه</option><option value="۷۵ دقیقه">۷۵ دقیقه</option><option value="۹۰ دقیقه">۹۰ دقیقه</option><option value="۱۲۰ دقیقه">۱۲۰ دقیقه</option></select></div>
 <div><label for="chapters">فصل‌های مورد آزمون</label><textarea id="chapters" placeholder="مثلاً فصل اول و دوم"></textarea></div>
 </div>
@@ -347,6 +347,29 @@ function showAppDialog(title,message,actions,bodyHtml=''){
  root.classList.remove('hidden');
  root.innerHTML='<div class="app-dialog-backdrop"><section class="app-dialog" role="dialog" aria-modal="true"><h3>'+esc(title)+'</h3><p>'+esc(message||'')+'</p>'+bodyHtml+'<div class="dialog-actions">'+actions.map((a,i)=>'<button type="button" class="'+(a.kind||'secondary-btn')+'" data-dialog-action="'+i+'">'+esc(a.label)+'</button>').join('')+'</div></section></div>';
  root.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=actions[Number(btn.dataset.dialogAction)]?.action;const result=action?action():undefined;if(result!==false){root.classList.add('hidden');root.innerHTML='';}}));
+}
+function getPersianTodayParts(){
+ const parts=new Intl.DateTimeFormat('en-US-u-ca-persian',{year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date());
+ const get=t=>Number(parts.find(p=>p.type===t)?.value||1);
+ return {year:get('year'),month:get('month'),day:get('day')};
+}
+function persianDigits(value){return Number(value).toLocaleString('fa-IR');}
+function isPersianLeapYear(year){const r=year%33;return [1,5,9,13,17,22,26,30].includes(r);}
+function persianMonthDays(year,month){return month<=6?31:month<=11?30:(isPersianLeapYear(year)?30:29);}
+function openExamDatePicker(){
+ const today=getPersianTodayParts();
+ const raw=String($('date').value||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+ const existing=raw.split('/').map(Number);
+ let year=existing.length===3&&existing[0]>=today.year&&existing[0]<=today.year+30?existing[0]:today.year;
+ let month=existing.length===3&&existing[1]>=1&&existing[1]<=12?existing[1]:today.month;
+ let day=existing.length===3&&existing[2]>=1?existing[2]:today.day;
+ day=Math.min(day,persianMonthDays(year,month));
+ const yearOptions=Array.from({length:31},(_,i)=>today.year+i);
+ const select=(id,label,options,value)=>'<div><label for="'+id+'">'+label+'</label><select id="'+id+'">'+options.map(([v,t])=>'<option value="'+v+'" '+(Number(v)===value?'selected':'')+'>'+t+'</option>').join('')+'</select></div>';
+ const body='<div class="date-picker-grid">'+select('examYear','سال',yearOptions.map(y=>[y,persianDigits(y)]),year)+select('examMonth','ماه',Array.from({length:12},(_,i)=>[i+1,persianDigits(i+1)]),month)+select('examDay','روز',Array.from({length:persianMonthDays(year,month)},(_,i)=>[i+1,persianDigits(i+1)]),day)+'</div><p class="fraction-hint">سال‌های قابل انتخاب از امسال تا ۳۰ سال آینده هستند.</p>';
+ showAppDialog('انتخاب تاریخ آزمون','سال، ماه و روز را انتخاب کن.',[{label:'انصراف',kind:'secondary-btn'},{label:'ثبت تاریخ',kind:'primary',action:()=>{const y=Number($('examYear').value),m=Number($('examMonth').value),d=Number($('examDay').value);if(!y||!m||!d||d>persianMonthDays(y,m))return false;$('date').value=[y,m,d].map(persianDigits).join('/');}}],body);
+ const refreshDays=()=>{const y=Number($('examYear').value),m=Number($('examMonth').value),daySelect=$('examDay');const previous=Math.min(Number(daySelect.value)||1,persianMonthDays(y,m));daySelect.innerHTML=Array.from({length:persianMonthDays(y,m)},(_,i)=>'<option value="'+(i+1)+'">'+persianDigits(i+1)+'</option>').join('');daySelect.value=String(previous);};
+ $('examYear').addEventListener('change',refreshDays);$('examMonth').addEventListener('change',refreshDays);
 }
 function insertFraction(id,field,index){
  fractionTarget={id,field,index};
