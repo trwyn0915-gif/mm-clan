@@ -1,4 +1,4 @@
-const CACHE_NAME = "kargbarg-school-v4";
+const CACHE_NAME = "kargbarg-school-v5";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 const APP_BASE = new URL("./", self.location.href);
 const APP_INDEX = new URL("./index.html", self.location.href).href;
