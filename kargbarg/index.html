@@ -298,7 +298,7 @@ window.addEventListener('popstate',()=>{
  const nextPanel=panelIds.includes(target)?target:'homePanel';
  if(currentPanel==='builder'&&nextPanel!=='builder'){
   history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
-  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند؟',[
+  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
    {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
    {label:'خروج',kind:'danger',action:()=>show('homePanel')}
   ]);
