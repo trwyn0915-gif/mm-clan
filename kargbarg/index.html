@@ -291,11 +291,14 @@ function show(id,addHistory=true){
  window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('popstate',()=>{
+ // در صفحه اصلی، تاریخچه داخلی نباید پنل دیگری را باز کند؛
+ // اجازه می‌دهیم دکمه برگشت سیستم، خود صفحه/مرورگر را ترک کند.
+ if(currentPanel==='homePanel')return;
  const target=location.hash.slice(1);
  const nextPanel=panelIds.includes(target)?target:'homePanel';
  if(currentPanel==='builder'&&nextPanel!=='builder'){
   history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
-  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
+  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند؟',[
    {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
    {label:'خروج',kind:'danger',action:()=>show('homePanel')}
   ]);
