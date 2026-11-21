@@ -96,6 +96,7 @@ button:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
 .answer-blank{display:inline-block;vertical-align:baseline;width:48px;min-width:30px;height:1.05em;border-bottom:1.5px solid #111;margin:0 3px;}
 @media print{.answer-blank{width:48px;height:1em;border-bottom:1.5px solid #000}}
 .paper-foot{display:flex;justify-content:space-between;margin-top:25px;padding-top:10px;border-top:1px solid #9aabad;font-size:.85rem}
+.paper-foot.matching-paper-foot{margin-top:8px;padding-top:0;border-top:0}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .creator-panel-link{display:flex;align-items:center;justify-content:center;width:fit-content;min-height:36px;margin:10px auto 4px;padding:3px 8px;border:2px solid var(--teal-dark);border-radius:10px;background:var(--teal-dark);color:#fff;text-decoration:none;font-size:.82rem;font-weight:900;box-shadow:0 2px 6px #075b621c}
 .creator-panel-link:focus-visible{outline:3px solid #e2a52b;outline-offset:3px}
@@ -584,7 +585,7 @@ function makePreview(){
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
- '<div class="paper-foot"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
+ '<div class="paper-foot'+(s.questions.some(q=>q.type==='وصل‌کردنی')?' matching-paper-foot':'')+'"><span>تعداد سؤال‌ها: '+s.questions.length+'</span><span>موفق باشید</span></div>';
 }
 function printSheet(){
  makePreview();
