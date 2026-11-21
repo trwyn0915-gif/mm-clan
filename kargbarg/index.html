@@ -341,24 +341,26 @@ function showAppDialog(title,message,actions,bodyHtml=''){
 }
 function insertFraction(id,field,index){
  fractionTarget={id,field,index};
- const body='<label for="fractionNumerator">صورت کسر</label><input id="fractionNumerator" type="text" placeholder="مثلاً x + ۲" autocomplete="off"><label for="fractionDenominator">مخرج کسر</label><input id="fractionDenominator" type="text" placeholder="مثلاً y - ۱" autocomplete="off"><div class="fraction-live-preview" id="fractionLivePreview">صورت / مخرج</div><p class="fraction-hint">می‌توانی عدد، حروف، عبارت ریاضی و ترکیب آن‌ها را وارد کنی؛ مثل (x+۲) روی (y−۱).</p>';
- showAppDialog('ساخت کسر','صورت و مخرج را وارد کن.',[
+ const body='<label for="fractionBefore">عبارت قبل از کسر (اختیاری)</label><input id="fractionBefore" type="text" placeholder="مثلاً ۲ + x ×" autocomplete="off"><label for="fractionNumerator">صورت کسر</label><input id="fractionNumerator" type="text" placeholder="مثلاً a + ۳" autocomplete="off"><label for="fractionDenominator">مخرج کسر</label><input id="fractionDenominator" type="text" placeholder="مثلاً b − ۱" autocomplete="off"><label for="fractionAfter">عبارت بعد از کسر (اختیاری)</label><input id="fractionAfter" type="text" placeholder="مثلاً ÷ ۵ یا + y" autocomplete="off"><div class="fraction-live-preview" id="fractionLivePreview">پیش‌نمایش عبارت</div><p class="fraction-hint">می‌توانی عدد، حروف انگلیسی، پرانتز و عملگرهای +، −، ×، ÷ و هر متن دیگری را قبل یا بعد از کسر وارد کنی. همه اجزا با هم درج می‌شوند.</p>';
+ showAppDialog('ساخت عبارت کسری','کل عبارت را یکجا بساز؛ بخش‌های قبل و بعد اختیاری هستند.',[
   {label:'انصراف',kind:'secondary-btn',action:()=>{fractionTarget=null;}},
-  {label:'افزودن کسر',kind:'primary',action:()=>{
-   const top=$('fractionNumerator')?.value.trim(),bottom=$('fractionDenominator')?.value.trim();
+  {label:'افزودن عبارت',kind:'primary',action:()=>{
+   const before=$('fractionBefore')?.value.trim()||'',top=$('fractionNumerator')?.value.trim(),bottom=$('fractionDenominator')?.value.trim(),after=$('fractionAfter')?.value.trim()||'';
    if(!top||!bottom){$('fractionLivePreview').textContent='صورت و مخرج را کامل کن';return false;}
    const q=questions.find(x=>String(x.id)===String(fractionTarget?.id));if(!q)return;
-   const token='[[frac:'+top+'|'+bottom+']]';
+   const token='[[fracx:'+before+'|'+top+'|'+bottom+'|'+after+']]';
    if(fractionTarget.field==='option'){if(!Array.isArray(q.options))q.options=['','','',''];q.options[fractionTarget.index]=String(q.options[fractionTarget.index]||'')+token;}
    else q[fractionTarget.field]=String(q[fractionTarget.field]||'')+token;
    fractionTarget=null;renderQuestions();
   }}
  ],body);
- const update=()=>{const top=$('fractionNumerator')?.value||'صورت',bottom=$('fractionDenominator')?.value||'مخرج';$('fractionLivePreview').innerHTML=renderMathText('[[frac:'+top+'|'+bottom+']]');};
- $('fractionNumerator').addEventListener('input',update);$('fractionDenominator').addEventListener('input',update);update();
+ const update=()=>{const before=$('fractionBefore')?.value||'',top=$('fractionNumerator')?.value||'صورت',bottom=$('fractionDenominator')?.value||'مخرج',after=$('fractionAfter')?.value||'';$('fractionLivePreview').innerHTML=renderMathText('[[fracx:'+before+'|'+top+'|'+bottom+'|'+after+']]');};
+ ['fractionBefore','fractionNumerator','fractionDenominator','fractionAfter'].forEach(id=>$(id).addEventListener('input',update));update();
 }
 function renderMathText(value){
- return esc(value).replace(/\[\[frac:([^|\]]*)\|([^\]]*)\]\]/g,(match,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
+ return esc(value)
+ .replace(/\[\[fracx:([^|\]]*)\|([^|\]]*)\|([^|\]]*)\|([^\]]*)\]\]/g,(m,before,top,bottom,after)=>before+'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>'+after)
+ .replace(/\[\[frac:([^|\]]*)\|([^\]]*)\]\]/g,(m,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
 function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupTitle=v;}
