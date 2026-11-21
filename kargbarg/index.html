@@ -215,8 +215,8 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <section class="panel hidden" id="builder">
 <h2>مشخصات کاربرگ</h2>
 <div class="fields">
-<div><label for="title">عنوان درس یا کاربرگ</label><input id="title" placeholder="برای نمونه: علوم تجربی"></div>
-<div><label for="grade">پایه / کلاس</label><input id="grade" placeholder="برای نمونه: پایه هفتم"></div>
+<div><label for="title">درس</label><select id="title"><option value="">انتخاب درس</option><option>فارسی</option><option>نگارش</option><option>ریاضی</option><option>علوم تجربی</option><option>مطالعات اجتماعی</option><option>قرآن</option><option>هدیه‌های آسمان</option><option>عربی</option><option>زبان انگلیسی</option><option>هنر</option><option>کار و فناوری</option><option>تفکر و سبک زندگی</option><option>پیام‌های آسمان</option><option>آمادگی دفاعی</option><option>زیست‌شناسی</option><option>فیزیک</option><option>شیمی</option><option>تاریخ</option><option>جغرافیا</option><option>اقتصاد</option><option>فلسفه</option><option>روان‌شناسی</option></select><button type="button" class="secondary-btn smallbtn" style="margin-top:8px" onclick="toggleOtherSubject()">بقیه موارد</button><input id="customSubject" class="hidden" style="margin-top:8px" placeholder="نام درس را وارد کنید"></div>
+<div><label for="grade">پایه / کلاس</label><select id="grade"><option value="">انتخاب پایه / کلاس</option><option>پیش‌دبستانی</option><option>پایه اول</option><option>پایه دوم</option><option>پایه سوم</option><option>پایه چهارم</option><option>پایه پنجم</option><option>پایه ششم</option><option>پایه هفتم</option><option>پایه هشتم</option><option>پایه نهم</option><option>پایه دهم</option><option>پایه یازدهم</option><option>پایه دوازدهم</option></select></div>
 <div><label for="teacher">نام دبیر</label><input id="teacher" placeholder="نام دبیر"></div>
 <div style="grid-column:1/-1;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#f7fbfb;margin-top:8px">
 <strong>مشخصات مدرسه</strong>
@@ -225,7 +225,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <div><label for="school">نام مدرسه</label><input id="school" placeholder="مثلاً: شهید عبدالرحمان حبیب‌لی"></div>
 </div></div>
 <div><label for="date">تاریخ</label><input id="date" placeholder="۱۴۰۵/۰۸/۲۴"></div>
-<div><label for="duration">مدت زمان آزمون</label><input id="duration" placeholder="مثلاً ۷۰ دقیقه"></div>
+<div><label for="duration">مدت زمان آزمون</label><select id="duration"><option value="">انتخاب مدت زمان</option><option value="۱۵ دقیقه">۱۵ دقیقه</option><option value="۲۰ دقیقه">۲۰ دقیقه</option><option value="۳۰ دقیقه">۳۰ دقیقه</option><option value="۴۰ دقیقه">۴۰ دقیقه</option><option value="۴۵ دقیقه">۴۵ دقیقه</option><option value="۶۰ دقیقه">۶۰ دقیقه</option><option value="۷۵ دقیقه">۷۵ دقیقه</option><option value="۹۰ دقیقه">۹۰ دقیقه</option><option value="۱۲۰ دقیقه">۱۲۰ دقیقه</option></select></div>
 <div><label for="chapters">فصل‌های مورد آزمون</label><textarea id="chapters" placeholder="مثلاً فصل اول و دوم"></textarea></div>
 </div>
 <div class="panel" style="padding:16px;margin-top:20px;background:#f7fbfb">
@@ -306,7 +306,14 @@ window.addEventListener('popstate',()=>{
 function newSheet(){
  questions=[];
  ['title','grade','teacher','date','duration','chapters'].forEach(x=>$(x).value='');
+ $('customSubject').value='';$('customSubject').classList.add('hidden');
  renderQuestions();show('builder');
+}
+function toggleOtherSubject(){
+ const field=$('customSubject');
+ field.classList.toggle('hidden');
+ if(!field.classList.contains('hidden')){ $('title').value='';field.focus(); }
+ else field.value='';
 }
 function addQuestion(type){
  const q={id:Date.now()+Math.random(),type,text:'',leftText:'',rightText:'',options:['','','',''],marks:''};
@@ -381,7 +388,7 @@ function updateGroupTitle(id,v){const q=questions.find(x=>String(x.id)===String(
 function updateGroupScore(id,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.groupScore=v;}
 function updateOption(id,j,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q.options[j]=v;}
 function removeQ(id){questions=questions.filter(x=>String(x.id)!==String(id));renderQuestions();}
-function getSheet(){return{title:$('title').value||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,city:$('city').value,school:$('school').value,questions:JSON.parse(JSON.stringify(questions))};}
+function getSheet(){return{title:($('customSubject').classList.contains('hidden')?$('title').value:$('customSubject').value.trim())||'کاربرگ آموزشی',grade:$('grade').value,teacher:$('teacher').value,date:$('date').value,duration:$('duration').value,chapters:$('chapters').value,city:$('city').value,school:$('school').value,questions:JSON.parse(JSON.stringify(questions))};}
 function getSchoolText(s){const city=(s.city||'').trim(),school=(s.school||'').trim();return [city,school?('مدرسه '+school):''].filter(Boolean).join('، ');}
 function readSaved(){try{return JSON.parse(localStorage.getItem('worksheet_saves')||'[]');}catch(e){return[];}}
 function saveSheet(){
@@ -396,7 +403,10 @@ function showSaved(){
 }
 function loadSheet(i){
  const s=saved[i];if(!s)return;
- ['title','grade','teacher','date','duration','chapters','city','school'].forEach(k=>$(k).value=s[k]||'');
+ ['grade','teacher','date','duration','chapters','city','school'].forEach(k=>$(k).value=s[k]||'');
+ const subject=s.title||'';const subjectOption=Array.from($('title').options).some(o=>o.value===subject);
+ if(subjectOption){$('title').value=subject;$('customSubject').value='';$('customSubject').classList.add('hidden');}
+ else{$('title').value='';$('customSubject').value=subject;$('customSubject').classList.remove('hidden');}
  questions=Array.isArray(s.questions)?s.questions:[];
  renderQuestions();show('builder');
 }
