@@ -318,6 +318,11 @@ window.addEventListener('popstate',()=>{
  if(currentPanel==='homePanel')return;
  const target=location.hash.slice(1);
  const nextPanel=panelIds.includes(target)?target:'homePanel';
+ if(currentPanel==='builder'&&!$('builderStep2').classList.contains('hidden')){
+  history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
+  setBuilderStep(1);
+  return;
+ }
  if(currentPanel==='builder'&&nextPanel!=='builder'){
   history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
   showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
