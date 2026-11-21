@@ -341,13 +341,12 @@ document.addEventListener('click',event=>{
 
 const panelIds=['homePanel','builder','listPanel','previewPanel'];
 let currentPanel='homePanel';
-// یک محافظ واحد برای دکمه بازگشت موبایل؛ پنل‌ها ورودی‌های جداگانه تاریخچه نمی‌سازند.
-function armBackGuard(){history.pushState({mmBackGuard:true},'',location.href);}
+// فقط یک ورودی محافظ در تاریخچه نگه می‌داریم؛ ورودهای مجدد به مراحل، تاریخچه را انباشته نمی‌کند.
+function armBackGuard(){
+ if(!history.state||!history.state.mmBackGuard) history.replaceState({mmBackGuard:true},'',location.href);
+}
 history.replaceState({mmBackGuard:true},'',location.href);
-armBackGuard();
-// فقط پس از بسته‌شدن پنجره چاپ، محافظ را دوباره فعال می‌کنیم؛
- // رویدادهای focus/visibility برای جلوگیری از ورودی‌های تکراری تاریخچه استفاده نمی‌شوند.
-window.addEventListener('afterprint',()=>{armBackGuard();});
+history.pushState({mmBackGuard:true},'',location.href);
 function show(id,addHistory=true){
  if(!panelIds.includes(id))return;
  panelIds.forEach(p=>$(p).classList.toggle('hidden',p!==id));
@@ -357,7 +356,8 @@ function show(id,addHistory=true){
 window.addEventListener('popstate',()=>{
  const builderOpen=!$('builder').classList.contains('hidden');
  if(builderOpen){
-  armBackGuard();
+  // پس از هر بازگشت داخل برنامه، دقیقاً یک محافظ تازه در بالای تاریخچه قرار می‌گیرد.
+  history.pushState({mmBackGuard:true},'',location.href);
   if(!$('builderStep2').classList.contains('hidden')){
    setBuilderStep(1);
    return;
@@ -369,7 +369,7 @@ window.addEventListener('popstate',()=>{
   return;
  }
  if(currentPanel!=='homePanel'){
-  armBackGuard();
+  history.pushState({mmBackGuard:true},'',location.href);
   show('homePanel',false);
  }
  // در صفحه اصلی، بازگشت بعدی اجازه خروج از سایت را می‌دهد.
