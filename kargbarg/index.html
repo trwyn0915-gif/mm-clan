@@ -180,7 +180,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <button class="typebtn" onclick="addQuestion('صحیح / غلط')">صحیح / غلط</button>
 <button class="typebtn" onclick="addQuestion('جای خالی')">جای خالی</button>
 <button class="typebtn" onclick="addQuestion('چهارگزینه‌ای')">چهارگزینه‌ای</button>
-<button class="typebtn" onclick="addQuestion('مقایسه بزرگ‌تر و کوچک‌تر')">بزرگ‌تر، کوچک‌تر یا مساوی</button>
+<button class="typebtn" onclick="addQuestion('مقایسه اعداد')">مقایسه اعداد</button>
 </div></div>
 <div id="questions"></div>
 <div class="actions">
@@ -275,7 +275,7 @@ function renderQuestions(){
 
  '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea>'+
  (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"></div>').join('')+'</div>':'')+
- (q.type==='مقایسه بزرگ‌تر و کوچک‌تر'?'<div class="fields"><div><label>عبارت یا عدد اول</label><input type="text" value="'+esc(q.leftText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'leftText\',this.value)" placeholder="مثلاً ۸ یا آب"></div><div><label>عبارت یا عدد دوم</label><input type="text" value="'+esc(q.rightText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'rightText\',this.value)" placeholder="مثلاً ۵ یا بخار آب"></div></div><p class="muted">دانش‌آموز باید علامت مناسب را در دایره قرار دهد.</p>':'')+
+ (q.type==='مقایسه اعداد'?'<div class="fields"><div><label>عبارت یا عدد اول</label><input type="text" value="'+esc(q.leftText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'leftText\',this.value)" placeholder="مثلاً ۸ یا آب"></div><div><label>عبارت یا عدد دوم</label><input type="text" value="'+esc(q.rightText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'rightText\',this.value)" placeholder="مثلاً ۵ یا بخار آب"></div></div><p class="muted">دانش‌آموز باید علامت مناسب را در دایره قرار دهد.</p>':'')+
  '</div>';}).join('')+'</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
 }
 function updateQ(id,k,v){const q=questions.find(x=>String(x.id)===String(id));if(q)q[k]=v;}
@@ -320,10 +320,10 @@ function makePreview(){
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+esc(o)+'</div>').join('')+'</div>';
   if(q.type==='صحیح / غلط')extra='<div class="truefalse"><span>ص □</span><span>غ □</span></div>';
   if(q.type==='تشریحی')extra='<div class="answer-lines"></div>';
-  if(q.type==='مقایسه بزرگ‌تر و کوچک‌تر')extra='<div class="compare-print"><span>'+esc(q.leftText||'................')+'</span><span class="compare-circle"></span><span>'+esc(q.rightText||'................')+'</span></div>';
+  if(q.type==='مقایسه اعداد')extra='<div class="compare-print"><span>'+esc(q.leftText||'................')+'</span><span class="compare-circle"></span><span>'+esc(q.rightText||'................')+'</span></div>';
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
   const questionLabel=questionLetters[itemIndex]||('بند '+(itemIndex+1).toLocaleString('fa-IR'));
-  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه بزرگ‌تر و کوچک‌تر'?'': '<div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div></div>')+extra+'</div></div>';
+  return '<div class="printq"><div class="num">'+questionLabel+')'+'</div><div class="qbody'+(q.type==='صحیح / غلط'?' qbody-truefalse':'')+'">'+(q.type==='مقایسه اعداد'?'': '<div class="question-line"><div class="qtext">'+esc(q.text||'')+'</div></div>')+extra+'</div></div>';
  }).join('')+'</div>').join('');
  $('previewArea').innerHTML='<div class="exam-top"><div class="exam-info"><strong>آزمون '+esc(s.title.replace(/^آزمون\s*/,'')||'')+'</strong><span class="exam-duration">مدت زمان آزمون: '+esc(s.duration||'................')+'</span><span>نام دبیر: '+esc(s.teacher||'........................')+'</span><span>تاریخ آزمون: '+esc(s.date||'........................')+'</span></div><div class="exam-bismillah"><strong class="education-name">مشخصات مدرسه</strong><strong class="school-name">'+esc(getSchoolText(s)||'........................')+'</strong><strong>بسمه تعالی</strong></div><div class="exam-student"><strong>نام و نام خانوادگی:</strong><span>پایه: '+esc(s.grade||'................')+'</span><span>فصل‌های مورد آزمون: '+esc(s.chapters||'........................')+'</span></div></div>'+
   questionHtml+
