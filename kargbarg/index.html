@@ -388,7 +388,7 @@ function deleteSheet(i){
  showAppDialog('حذف کاربرگ','آیا از حذف این کاربرگ مطمئنی؟',[{label:'انصراف',kind:'secondary-btn'},{label:'حذف',kind:'danger',action:()=>{saved.splice(i,1);localStorage.setItem('worksheet_saves',JSON.stringify(saved));showSaved();}}]);
 }
 function makePreview(){
- if(!questions.length){alert('ابتدا دست‌کم یک سؤال اضافه کنید.');return;}
+ if(!questions.length){showAppDialog('کاربرگ خالی است','ابتدا یک سؤال اضافه کن.',[{label:'متوجه شدم',kind:'primary'}]);return;}
  const s=getSheet();
  const groups=[];
  s.questions.forEach((q,i)=>{
