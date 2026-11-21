@@ -340,38 +340,36 @@ document.addEventListener('click',event=>{
 });
 
 const panelIds=['homePanel','builder','listPanel','previewPanel'];
-let currentPanel='homePanel',historyReady=false;
-// در هر بار بارگذاری صفحه، ورودی محافظ تازه می‌سازیم؛ به state قدیمی مرورگر اعتماد نمی‌کنیم.
-history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
-history.pushState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
+let currentPanel='homePanel';
+// یک محافظ واحد برای دکمه بازگشت موبایل؛ پنل‌ها ورودی‌های جداگانه تاریخچه نمی‌سازند.
+function armBackGuard(){history.pushState({mmBackGuard:true},'',location.href);}
+history.replaceState({mmBackGuard:true},'',location.href);
+armBackGuard();
 function show(id,addHistory=true){
  if(!panelIds.includes(id))return;
  panelIds.forEach(p=>$(p).classList.toggle('hidden',p!==id));
- const changed=currentPanel!==id;currentPanel=id;
- if(addHistory&&changed){history.pushState({worksheetPanel:id},'',location.pathname+'#'+id);}
+ currentPanel=id;
  window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('popstate',()=>{
- // تا وقتی پنل ساخت کاربرگ باز است، بازگشت موبایل نباید سایت را ترک کند.
- if(!$('builder').classList.contains('hidden')){
-  history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
+ const builderOpen=!$('builder').classList.contains('hidden');
+ if(builderOpen){
+  armBackGuard();
   if(!$('builderStep2').classList.contains('hidden')){
    setBuilderStep(1);
    return;
   }
-  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
+  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی می‌مانند.',[
    {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
-   {label:'خروج',kind:'danger',action:()=>{
-    show('homePanel',false);
-    history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
-   }}
+   {label:'خروج',kind:'danger',action:()=>{show('homePanel',false);}}
   ]);
   return;
  }
- if(currentPanel==='homePanel')return;
- const target=location.hash.slice(1);
- const nextPanel=panelIds.includes(target)?target:'homePanel';
- show(nextPanel,false);
+ if(currentPanel!=='homePanel'){
+  armBackGuard();
+  show('homePanel',false);
+ }
+ // در صفحه اصلی، بازگشت بعدی اجازه خروج از سایت را می‌دهد.
 });
 function setBuilderStep(step){
  const second=Number(step)===2;
