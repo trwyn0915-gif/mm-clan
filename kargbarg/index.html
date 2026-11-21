@@ -213,33 +213,40 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  #previewArea .print-option,#previewArea .truefalse{font-weight:800!important}
 }
 
-/* Matching question: keep both outer edges visible and leave the center open */
-.matching-print-side{
+/* Final matching-column outer edges: right edge of right column, left edge of left column */
+.matching-print-side:first-child{
  position:relative!important;
- border-top:1px solid #000!important;
- border-bottom:1px solid #000!important;
- border-left:0!important;
- border-right:0!important;
+ box-shadow:inset -2px 0 0 #000!important;
 }
 .matching-print-side:first-child::after{
- content:"";
- position:absolute;
- top:-1px;
- bottom:-1px;
- right:0;
- width:1.5px;
- background:#000;
- pointer-events:none;
+ content:""!important;
+ position:absolute!important;
+ top:-1px!important;
+ bottom:-1px!important;
+ right:-1px!important;
+ left:auto!important;
+ width:2px!important;
+ background:#000!important;
+ display:block!important;
+ z-index:20!important;
+ pointer-events:none!important;
+}
+.matching-print-side:last-child{
+ position:relative!important;
+ box-shadow:inset 2px 0 0 #000!important;
 }
 .matching-print-side:last-child::after{
- content:"";
- position:absolute;
- top:-1px;
- bottom:-1px;
- left:0;
- width:1.5px;
- background:#000;
- pointer-events:none;
+ content:""!important;
+ position:absolute!important;
+ top:-1px!important;
+ bottom:-1px!important;
+ left:-1px!important;
+ right:auto!important;
+ width:2px!important;
+ background:#000!important;
+ display:block!important;
+ z-index:20!important;
+ pointer-events:none!important;
 }
 </style>
 </head>
