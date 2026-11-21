@@ -345,22 +345,9 @@ let currentPanel='homePanel';
 function armBackGuard(){history.pushState({mmBackGuard:true},'',location.href);}
 history.replaceState({mmBackGuard:true},'',location.href);
 armBackGuard();
-// بازگشت از پنجره چاپ/ذخیره PDF در اندروید ممکن است صفحه را بدون بارگذاری مجدد فعال کند.
-// در هر چرخه بازگشت به تب، یک محافظ تازه در بالای تاریخچه قرار می‌دهیم.
-let resumeGuardCycle=true;
-function refreshBackGuardOnResume(){
- if(resumeGuardCycle)return;
- resumeGuardCycle=true;
- history.replaceState({mmBackGuard:true,mmResumeGuard:true},'',location.href);
- history.pushState({mmBackGuard:true,mmResumeGuard:true},'',location.href);
-}
-window.addEventListener('blur',()=>{resumeGuardCycle=false;});
-window.addEventListener('focus',refreshBackGuardOnResume);
-window.addEventListener('pageshow',refreshBackGuardOnResume);
-document.addEventListener('visibilitychange',()=>{
- if(document.visibilityState==='hidden')resumeGuardCycle=false;
- else refreshBackGuardOnResume();
-});
+// فقط پس از بسته‌شدن پنجره چاپ، محافظ را دوباره فعال می‌کنیم؛
+ // رویدادهای focus/visibility برای جلوگیری از ورودی‌های تکراری تاریخچه استفاده نمی‌شوند.
+window.addEventListener('afterprint',()=>{armBackGuard();});
 function show(id,addHistory=true){
  if(!panelIds.includes(id))return;
  panelIds.forEach(p=>$(p).classList.toggle('hidden',p!==id));
@@ -396,6 +383,7 @@ function setBuilderStep(step){
  window.scrollTo({top:0,behavior:'instant'});
 }
 function newSheet(){
+ armBackGuard();
  setBuilderStep(1);
  questions=[];
  ['title','grade','teacher','date','duration','chapters'].forEach(x=>$(x).value='');
@@ -529,6 +517,7 @@ function showSaved(){
 }
 function loadSheet(i){
  const s=saved[i];if(!s)return;
+ armBackGuard();
  ['grade','teacher','date','duration','chapters','city','school'].forEach(k=>$(k).value=s[k]||'');
  const subject=s.title||'';const subjectOption=Array.from($('title').options).some(o=>o.value===subject);
  if(subjectOption){$('title').value=subject;$('customSubject').value='';$('customSubject').classList.add('hidden');}
