@@ -341,11 +341,9 @@ document.addEventListener('click',event=>{
 
 const panelIds=['homePanel','builder','listPanel','previewPanel'];
 let currentPanel='homePanel',historyReady=false;
-// یک ورودی محافظ در تاریخچه می‌سازیم تا بازگشت اول، خود سایت را ترک نکند.
-if(!history.state||!history.state.mmBackGuard){
- history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true},'',location.pathname+location.search+'#homePanel');
- history.pushState({worksheetPanel:'homePanel',mmBackGuard:true},'',location.pathname+location.search+'#homePanel');
-}
+// در هر بار بارگذاری صفحه، ورودی محافظ تازه می‌سازیم؛ به state قدیمی مرورگر اعتماد نمی‌کنیم.
+history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
+history.pushState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
 function show(id,addHistory=true){
  if(!panelIds.includes(id))return;
  panelIds.forEach(p=>$(p).classList.toggle('hidden',p!==id));
@@ -364,8 +362,8 @@ window.addEventListener('popstate',()=>{
   showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
    {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
    {label:'خروج',kind:'danger',action:()=>{
-    show('homePanel');
-    history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true},'',location.pathname+location.search+'#homePanel');
+    show('homePanel',false);
+    history.replaceState({worksheetPanel:'homePanel',mmBackGuard:true,sessionGuard:true},'',location.pathname+location.search+'#homePanel');
    }}
   ]);
   return;
