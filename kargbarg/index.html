@@ -313,24 +313,22 @@ function show(id,addHistory=true){
  window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('popstate',()=>{
- // در صفحه اصلی، تاریخچه داخلی نباید پنل دیگری را باز کند؛
- // اجازه می‌دهیم دکمه برگشت سیستم، خود صفحه/مرورگر را ترک کند.
- if(currentPanel==='homePanel')return;
- const target=location.hash.slice(1);
- const nextPanel=panelIds.includes(target)?target:'homePanel';
- if(currentPanel==='builder'&&!$('builderStep2').classList.contains('hidden')){
+ // تا وقتی پنل ساخت کاربرگ باز است، بازگشت موبایل نباید سایت را ترک کند.
+ if(!$('builder').classList.contains('hidden')){
   history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
-  setBuilderStep(1);
-  return;
- }
- if(currentPanel==='builder'&&nextPanel!=='builder'){
-  history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
+  if(!$('builderStep2').classList.contains('hidden')){
+   setBuilderStep(1);
+   return;
+  }
   showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
    {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
    {label:'خروج',kind:'danger',action:()=>show('homePanel')}
   ]);
   return;
  }
+ if(currentPanel==='homePanel')return;
+ const target=location.hash.slice(1);
+ const nextPanel=panelIds.includes(target)?target:'homePanel';
  show(nextPanel,false);
 });
 function setBuilderStep(step){
