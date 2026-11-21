@@ -546,7 +546,7 @@ function makePreview(){
   if(q.type==='وصل‌کردنی'){
    const left=Array.isArray(q.leftItems)?q.leftItems:['','',''],right=Array.isArray(q.rightItems)?q.rightItems:['','',''];
    const letters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر'];
-   const side=(items,title,isLeft)=>'<div class="matching-print-side"><div class="matching-print-title">'+title+'</div>'+items.map((value,j)=>'<div class="matching-print-item"><span class="matching-print-mark">'+(isLeft?(j+1).toLocaleString('fa-IR'):letters[j]||(''+(j+1)))+')</span><span class="matching-print-text">'+renderMathText(value||'........................')+'</span></div>').join('')+'</div>';
+   const side=(items,title,isLeft)=>'<div class="matching-print-side" style="'+(isLeft?'border-right:2px solid #000!important;border-left:0!important;':'border-left:2px solid #000!important;border-right:0!important;')+'"><div class="matching-print-title">'+title+'</div>'+items.map((value,j)=>'<div class="matching-print-item"><span class="matching-print-mark">'+(isLeft?(j+1).toLocaleString('fa-IR'):letters[j]||(''+(j+1)))+')</span><span class="matching-print-text">'+renderMathText(value||'........................')+'</span></div>').join('')+'</div>';
    extra='<div class="matching-print">'+side(left,'ستون راست',true)+side(right,'ستون چپ',false)+'</div>';
   }
   const questionLetters=['الف','ب','ج','د','هـ','و','ز','ح','ط','ی','ک','ل','م','ن','س','ع','ف','ص','ق','ر','ش','ت','ث','خ','ذ','ض','ظ','غ'];
