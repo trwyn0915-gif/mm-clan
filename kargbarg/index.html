@@ -337,7 +337,7 @@ function showAppDialog(title,message,actions,bodyHtml=''){
  const root=$('appDialogRoot');
  root.classList.remove('hidden');
  root.innerHTML='<div class="app-dialog-backdrop"><section class="app-dialog" role="dialog" aria-modal="true"><h3>'+esc(title)+'</h3><p>'+esc(message||'')+'</p>'+bodyHtml+'<div class="dialog-actions">'+actions.map((a,i)=>'<button type="button" class="'+(a.kind||'secondary-btn')+'" data-dialog-action="'+i+'">'+esc(a.label)+'</button>').join('')+'</div></section></div>';
- root.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=actions[Number(btn.dataset.dialogAction)]?.action;root.classList.add('hidden');root.innerHTML='';if(action)action();}));
+ root.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=actions[Number(btn.dataset.dialogAction)]?.action;const result=action?action():undefined;if(result!==false){root.classList.add('hidden');root.innerHTML='';}}));
 }
 function insertFraction(id,field,index){
  fractionTarget={id,field,index};
@@ -346,7 +346,7 @@ function insertFraction(id,field,index){
   {label:'انصراف',kind:'secondary-btn',action:()=>{fractionTarget=null;}},
   {label:'افزودن کسر',kind:'primary',action:()=>{
    const top=$('fractionNumerator')?.value.trim(),bottom=$('fractionDenominator')?.value.trim();
-   if(!top||!bottom){showAppDialog('اطلاعات کسر کامل نیست','لطفاً هم صورت و هم مخرج را وارد کن.',[{label:'متوجه شدم',kind:'primary'}]);return;}
+   if(!top||!bottom){$('fractionLivePreview').textContent='صورت و مخرج را کامل کن';return false;}
    const q=questions.find(x=>String(x.id)===String(fractionTarget?.id));if(!q)return;
    const token='[[frac:'+top+'|'+bottom+']]';
    if(fractionTarget.field==='option'){if(!Array.isArray(q.options))q.options=['','','',''];q.options[fractionTarget.index]=String(q.options[fractionTarget.index]||'')+token;}
