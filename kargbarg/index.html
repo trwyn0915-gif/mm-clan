@@ -175,6 +175,28 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 .print-fraction .fraction-stack{display:inline-flex;flex-direction:column;align-items:center;justify-content:center}
 .print-fraction .fraction-top{display:block;padding:0 3px 2px;border-bottom:1px solid currentColor}
 .print-fraction .fraction-bottom{display:block;padding:2px 3px 0}
+
+/* In-app dialogs */
+.app-dialog-backdrop{position:fixed;inset:0;z-index:9999;background:#10252dcc;display:flex;align-items:center;justify-content:center;padding:18px}
+.app-dialog{width:min(100%,480px);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 18px 60px #0005}
+.app-dialog h3{margin:0 0 8px;color:#075b62;font-size:1.2rem}
+.app-dialog p{margin:0 0 12px;color:#526873;font-size:.9rem}
+.app-dialog .dialog-actions{display:flex;gap:10px;margin-top:16px}
+.app-dialog .dialog-actions button{flex:1}
+.fraction-live-preview{display:flex;align-items:center;justify-content:center;min-height:84px;padding:10px;border:1px dashed #9eb7b9;border-radius:12px;margin-top:12px;font-size:1.25rem}
+.fraction-live-preview .print-fraction{font-size:1.25em}
+.compare-group.compare-count-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.compare-group.compare-count-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.compare-group.compare-count-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.compare-group .printq{display:flex;align-items:center;justify-content:center;min-height:76px;padding:12px 8px;border-left:0;border-right:1px solid #000}
+.compare-group .printq:nth-child(2n){border-right:0}
+.compare-group.compare-count-3 .printq:nth-child(2n){border-right:1px solid #000}
+.compare-group.compare-count-3 .printq:nth-child(3n){border-right:0}
+.compare-group.compare-count-4 .printq:nth-child(2n){border-right:1px solid #000}
+.compare-group.compare-count-4 .printq:nth-child(4n){border-right:0}
+.compare-group .qbody{display:flex;justify-content:center}
+.compare-group .compare-print{width:100%;justify-content:space-evenly;gap:10px;min-height:54px}
+@media print{.app-dialog-backdrop{display:none!important}.compare-group .printq{min-height:64px;padding:10px 6px}}
 </style>
 </head>
 <body>
@@ -228,7 +250,7 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
 <footer>کاربرگ‌ساز مدرسه
 <a class="creator-panel-link" href="https://trwyn0915-gif.github.io/mm-clan-site-2026/">پنل سازنده سایت</a>
 </footer>
-</main>
+<div id="appDialogRoot" class="hidden" aria-live="polite"></div></main>
 <script>
 let questions=[],saved=[];
 const $=id=>document.getElementById(id);
@@ -270,11 +292,12 @@ window.addEventListener('popstate',()=>{
  const target=location.hash.slice(1);
  const nextPanel=panelIds.includes(target)?target:'homePanel';
  if(currentPanel==='builder'&&nextPanel!=='builder'){
-  const leave=confirm('آیا مطمئن هستید می‌خواهید از ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده ممکن است از بین بروند.');
-  if(!leave){
-   history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
-   return;
-  }
+  history.pushState({worksheetPanel:'builder'},'',location.pathname+'#builder');
+  showAppDialog('خروج از ساخت کاربرگ','آیا می‌خواهید از صفحه ساخت کاربرگ خارج شوید؟ تغییرات ذخیره‌نشده باقی نمی‌مانند.',[
+   {label:'ادامه ویرایش',kind:'secondary-btn',action:()=>{}},
+   {label:'خروج',kind:'danger',action:()=>show('homePanel')}
+  ]);
+  return;
  }
  show(nextPanel,false);
 });
@@ -305,20 +328,34 @@ function renderQuestions(){
  '<div class="qtop"><strong>سؤال '+(i+1)+'</strong><span class="qtype">'+esc(q.type)+'</span><button class="smallbtn danger" onclick="removeQ(\''+esc(q.id)+'\')">حذف سؤال</button></div>'+
 
  '<label>متن سؤال</label><textarea oninput="updateQ(\''+esc(q.id)+'\',\'text\',this.value)" placeholder="'+(q.type==='جای خالی'?'جمله را بنویسید و محل پاسخ را با نقطه‌چین مشخص کنید؛ مثال: پایتخت ایران .......... است.':'متن سؤال را بنویسید...')+'">'+esc(q.text)+'</textarea><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'text\')">＋ کسر</button></div><p class="fraction-hint">برای نوشتن کسر، دکمه «کسر» را بزنید.</p>'+
- (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+renderMathText(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'option\','+j+')">＋ کسر</button></div></div>').join('')+'</div>':'')+
+ (q.type==='چهارگزینه‌ای'?'<div class="fields">'+q.options.map((o,j)=>'<div><label>گزینه '+['الف','ب','ج','د'][j]+'</label><input value="'+esc(o)+'" oninput="updateOption(\''+esc(q.id)+'\','+j+',this.value)" placeholder="متن گزینه"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'option\','+j+')">＋ کسر</button></div></div>').join('')+'</div>':'')+
  (q.type==='مقایسه'?'<div class="fields"><div><label>عبارت یا عدد اول</label><input type="text" value="'+esc(q.leftText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'leftText\',this.value)" placeholder="مثلاً ۸ یا آب"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'leftText\')">＋ کسر</button></div></div><div><label>عبارت یا عدد دوم</label><input type="text" value="'+esc(q.rightText||'')+'" oninput="updateQ(\''+esc(q.id)+'\',\'rightText\',this.value)" placeholder="مثلاً ۵ یا بخار آب"><div class="fraction-tools"><button type="button" class="fraction-btn" onclick="insertFraction(\''+esc(q.id)+'\',\'rightText\')">＋ کسر</button></div></div></div><p class="muted">دانش‌آموز باید علامت مناسب را در دایره قرار دهد.</p>':'')+
  '</div>';}).join('')+'</div>').join(''):'<div class="empty">هنوز سؤالی اضافه نشده است. یکی از نوع‌های سؤال را انتخاب کنید.</div>');
 }
+let fractionTarget=null;
+function showAppDialog(title,message,actions,bodyHtml=''){
+ const root=$('appDialogRoot');
+ root.classList.remove('hidden');
+ root.innerHTML='<div class="app-dialog-backdrop"><section class="app-dialog" role="dialog" aria-modal="true"><h3>'+esc(title)+'</h3><p>'+esc(message||'')+'</p>'+bodyHtml+'<div class="dialog-actions">'+actions.map((a,i)=>'<button type="button" class="'+(a.kind||'secondary-btn')+'" data-dialog-action="'+i+'">'+esc(a.label)+'</button>').join('')+'</div></section></div>';
+ root.querySelectorAll('[data-dialog-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=actions[Number(btn.dataset.dialogAction)]?.action;root.classList.add('hidden');root.innerHTML='';if(action)action();}));
+}
 function insertFraction(id,field,index){
- const q=questions.find(x=>String(x.id)===String(id));if(!q)return;
- const numerator=prompt('صورت کسر را وارد کنید:');if(numerator===null||!numerator.trim())return;
- const denominator=prompt('مخرج کسر را وارد کنید:');if(denominator===null||!denominator.trim())return;
- const token='[[frac:'+numerator.trim()+'|'+denominator.trim()+']]';
- if(field==='option'){
-  if(!Array.isArray(q.options))q.options=['','','',''];
-  q.options[index]=String(q.options[index]||'')+token;
- }else q[field]=String(q[field]||'')+token;
- renderQuestions();
+ fractionTarget={id,field,index};
+ const body='<label for="fractionNumerator">صورت کسر</label><input id="fractionNumerator" type="text" placeholder="مثلاً x + ۲" autocomplete="off"><label for="fractionDenominator">مخرج کسر</label><input id="fractionDenominator" type="text" placeholder="مثلاً y - ۱" autocomplete="off"><div class="fraction-live-preview" id="fractionLivePreview">صورت / مخرج</div><p class="fraction-hint">می‌توانی عدد، حروف، عبارت ریاضی و ترکیب آن‌ها را وارد کنی؛ مثل (x+۲) روی (y−۱).</p>';
+ showAppDialog('ساخت کسر','صورت و مخرج را وارد کن.',[
+  {label:'انصراف',kind:'secondary-btn',action:()=>{fractionTarget=null;}},
+  {label:'افزودن کسر',kind:'primary',action:()=>{
+   const top=$('fractionNumerator')?.value.trim(),bottom=$('fractionDenominator')?.value.trim();
+   if(!top||!bottom){showAppDialog('اطلاعات کسر کامل نیست','لطفاً هم صورت و هم مخرج را وارد کن.',[{label:'متوجه شدم',kind:'primary'}]);return;}
+   const q=questions.find(x=>String(x.id)===String(fractionTarget?.id));if(!q)return;
+   const token='[[frac:'+top+'|'+bottom+']]';
+   if(fractionTarget.field==='option'){if(!Array.isArray(q.options))q.options=['','','',''];q.options[fractionTarget.index]=String(q.options[fractionTarget.index]||'')+token;}
+   else q[fractionTarget.field]=String(q[fractionTarget.field]||'')+token;
+   fractionTarget=null;renderQuestions();
+  }}
+ ],body);
+ const update=()=>{const top=$('fractionNumerator')?.value||'صورت',bottom=$('fractionDenominator')?.value||'مخرج';$('fractionLivePreview').innerHTML=renderMathText('[[frac:'+top+'|'+bottom+']]');};
+ $('fractionNumerator').addEventListener('input',update);$('fractionDenominator').addEventListener('input',update);update();
 }
 function renderMathText(value){
  return esc(value).replace(/\[\[frac:([^|\]]*)\|([^\]]*)\]\]/g,(match,top,bottom)=>'<span class="print-fraction"><span class="fraction-stack"><span class="fraction-top">'+top+'</span><span class="fraction-bottom">'+bottom+'</span></span></span>');
@@ -359,7 +396,7 @@ function makePreview(){
   if(!g||g.type!==q.type){g={type:q.type,title:q.groupTitle||'',items:[]};groups.push(g);}
   g.items.push({q,index:i});
  });
- let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group'+(g.type==='مقایسه'?' compare-group':'')+'"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span>'+(g.items[0].q.groupScore!==undefined&&g.items[0].q.groupScore!==''?'<span class="print-group-score">نمره: '+esc(g.items[0].q.groupScore)+'</span>':'')+'</div>'+
+ let questionHtml=groups.map((g,groupIndex)=>'<div class="print-group'+(g.type==='مقایسه'?' compare-group compare-count-'+Math.min(4,g.items.length):'')+'"><div class="print-group-title"><span class="print-group-number">'+(groupIndex+1).toLocaleString('fa-IR')+'</span><span>'+esc(g.title||('مجموعه سؤال '+(groupIndex+1).toLocaleString('fa-IR')) )+'</span>'+(g.items[0].q.groupScore!==undefined&&g.items[0].q.groupScore!==''?'<span class="print-group-score">نمره: '+esc(g.items[0].q.groupScore)+'</span>':'')+'</div>'+
  g.items.map(({q,index},itemIndex)=>{
   let extra='';
   if(q.type==='چهارگزینه‌ای')extra='<div class="print-options">'+q.options.map((o,j)=>'<div class="print-option">'+['الف','ب','ج','د'][j]+') '+renderMathText(o)+'</div>').join('')+'</div>';
