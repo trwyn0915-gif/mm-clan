@@ -395,6 +395,112 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:14px}
  .matching-print-side{padding:7px 10px!important}
 }
 
+
+/* Final matching-question alignment: marks stay beside their text; dots face the center gap. */
+.matching-print{
+ display:grid!important;
+ direction:rtl!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ column-gap:22px!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:8px 10px!important;
+}
+.matching-print-side{
+ min-width:0!important;
+ box-sizing:border-box!important;
+ padding:7px 10px!important;
+ border-top:0!important;
+ border-bottom:0!important;
+}
+.matching-print-side:first-child{border-right:1px solid #555!important;border-left:0!important}
+.matching-print-side:last-child{border-left:1px solid #555!important;border-right:0!important}
+.matching-print-title{
+ position:relative!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+ text-align:center!important;
+ margin:0 0 6px!important;
+ padding:0 0 7px!important;
+ border:0!important;
+}
+.matching-print-title::after{
+ content:""!important;
+ position:absolute!important;
+ left:0!important;
+ right:0!important;
+ bottom:0!important;
+ height:1px!important;
+ background:#555!important;
+}
+.matching-print-item{
+ position:relative!important;
+ display:flex!important;
+ align-items:center!important;
+ box-sizing:border-box!important;
+ width:100%!important;
+ min-height:38px!important;
+ gap:7px!important;
+ padding:5px 3px!important;
+ border:0!important;
+ white-space:normal!important;
+}
+.matching-print-side:first-child .matching-print-item{
+ direction:rtl!important;
+ justify-content:flex-start!important;
+ padding-left:17px!important;
+ padding-right:3px!important;
+}
+.matching-print-side:first-child .matching-print-item::after{
+ content:"●"!important;
+ position:absolute!important;
+ left:2px!important;
+ right:auto!important;
+ top:50%!important;
+ transform:translateY(-50%)!important;
+ font-size:8px!important;
+ line-height:1!important;
+}
+.matching-print-side:last-child .matching-print-item{
+ direction:ltr!important;
+ justify-content:flex-start!important;
+ padding-right:17px!important;
+ padding-left:3px!important;
+}
+.matching-print-side:last-child .matching-print-item::before{
+ content:"●"!important;
+ position:absolute!important;
+ right:2px!important;
+ left:auto!important;
+ top:50%!important;
+ transform:translateY(-50%)!important;
+ font-size:8px!important;
+ line-height:1!important;
+}
+.matching-print-item .matching-print-mark{
+ display:inline-block!important;
+ flex:0 0 auto!important;
+ min-width:22px!important;
+ max-width:none!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+}
+.matching-print-item .matching-print-text{
+ display:inline-block!important;
+ flex:0 1 auto!important;
+ min-width:0!important;
+ max-width:calc(100% - 32px)!important;
+ overflow-wrap:anywhere!important;
+}
+.printq.matching-q{border-bottom:0!important;padding-bottom:4px!important}
+@media print{
+ .matching-print{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:22px!important}
+ .matching-print-side:first-child{border-right:1px solid #555!important}
+ .matching-print-side:last-child{border-left:1px solid #555!important}
+ .matching-print-item{min-height:38px!important}
+}
+
 </style>
 </head>
 <body>
