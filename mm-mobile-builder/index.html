@@ -550,7 +550,6 @@ function exportHTML(preview){
 let score=0;document.querySelectorAll('[data-game="coin"]').forEach(c=>c.addEventListener('click',()=>{c.remove();score++;document.querySelectorAll('[data-score]').forEach(x=>x.textContent=score)}));
 const player=document.querySelector('[data-game="player"]');if(player){let x=parseFloat(player.style.left)||0,y=parseFloat(player.style.top)||0;const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});function move(){if(keys.arrowleft||keys.a)x-=3;if(keys.arrowright||keys.d)x+=3;if(keys.arrowup||keys.w)y-=3;if(keys.arrowdown||keys.s)y+=3;x=Math.max(0,Math.min(${S.w}-player.offsetWidth,x));y=Math.max(0,Math.min(${S.h}-player.offsetHeight,y));player.style.left=x+'px';player.style.top=y+'px';requestAnimationFrame(move)}move()}
 <\/script>`;
- const bodyGame=body.replace(/<div style="([^"]*)">([^<]*)<\\/div>/g,(m,st,tx)=>m);
  const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بازی ساخته‌شده با MM</title>${runtime}</head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
  if(preview){const w=window.open();w.document.write(out);w.document.close()}else download(new Blob([out],{type:'text/html;charset=utf-8'}),'mm-mobile-page.html')
 }
