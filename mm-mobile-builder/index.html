@@ -47,6 +47,27 @@ textarea{min-height:70px;resize:vertical}
 .layer.active{border-color:#f59e0b}.layer span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
 .layer button{padding:3px 7px}.layer .layer-order{min-width:28px;padding:3px 5px;background:#1e293b;border:1px solid #475569;color:#e2e8f0}.layer .layer-order:disabled{opacity:.3}
 .preview-note{font-size:11px;color:#94a3b8;line-height:1.6}
+.scene-tools{display:flex;gap:5px;align-items:center}
+.scene-tools select{width:145px;min-width:100px}
+.game-el{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;user-select:none}
+.game-player{border-radius:16px;background:linear-gradient(145deg,#38bdf8,#1d4ed8);color:white;border:3px solid #dbeafe}
+.game-platform{background:linear-gradient(#64748b,#334155);border:2px solid #cbd5e1;border-radius:8px}
+.game-coin{border-radius:50%;background:radial-gradient(circle at 35% 30%,#fef08a,#eab308 65%,#a16207);border:3px solid #facc15;color:#713f12}
+.game-enemy{border-radius:12px;background:linear-gradient(145deg,#fb7185,#be123c);color:white;border:2px solid #fecdd3}
+.game-progress{background:#e2e8f0;border:2px solid #475569;border-radius:20px;overflow:hidden}
+.game-progress i{display:block;height:100%;width:65%;background:linear-gradient(90deg,#22c55e,#86efac)}
+.game-loading{background:#0f172a;color:#f8fafc;border-radius:12px;gap:8px}
+.game-loading i{width:22px;height:22px;border:3px solid #64748b;border-top-color:#fbbf24;border-radius:50%;animation:mmSpin .8s linear infinite}
+.mm-anim-float{animation:mmFloat 2.4s ease-in-out infinite}
+.mm-anim-pulse{animation:mmPulse 1.4s ease-in-out infinite}
+.mm-anim-spin{animation:mmSpin 2s linear infinite}
+.mm-anim-bounce{animation:mmBounce 1s ease-in-out infinite}
+.mm-anim-fade{animation:mmFade 1.8s ease-in-out infinite}
+@keyframes mmSpin{to{transform:rotate(360deg)}}
+@keyframes mmFloat{50%{translate:0 -12px}}
+@keyframes mmPulse{50%{scale:1.08}}
+@keyframes mmBounce{50%{translate:0 -10px}}
+@keyframes mmFade{50%{opacity:.25}}
 #file{display:none}
 @media(max-width:1000px){.main{grid-template-columns:200px 1fr}.right{display:none}}
 @media(max-width:650px){.main{grid-template-columns:1fr}.left{display:none}.workspace{padding:15px}.phone{transform-origin:top center}}
@@ -89,7 +110,8 @@ body.mobile-access-blocked #mobileAccessBlock{
   <button id="save">ذخیره پروژه</button>
   <button id="open">باز کردن</button>
   <button id="export">خروجی HTML</button>
-  <button id="preview">پیش‌نمایش</button>
+  <button id="preview">اجرای بازی</button>
+  <div class="scene-tools"><select id="sceneSelect" aria-label="صحنه فعال"></select><button id="addScene">صحنه +</button><button id="duplicateScene">کپی صحنه</button><button id="deleteScene">حذف صحنه</button></div>
   <div class="spacer"></div><span id="status"></span>
 </header>
 <div class="main">
@@ -97,10 +119,17 @@ body.mobile-access-blocked #mobileAccessBlock{
 <div class="group">
 <h3>افزودن</h3>
 <div class="grid">
-<button data-add="text">📝 متن</button>
-<button data-add="box">▭ کادر</button>
-<button data-add="button">🔘 دکمه</button>
-<button data-add="image">🖼 تصویر</button>
+<button data-add="text">متن</button>
+<button data-add="box">کادر</button>
+<button data-add="button">دکمه</button>
+<button data-add="image">تصویر</button>
+<button data-add="player">شخصیت</button>
+<button data-add="platform">سکو</button>
+<button data-add="coin">سکه</button>
+<button data-add="enemy">دشمن نمایشی</button>
+<button data-add="progress">نوار پیشرفت</button>
+<button data-add="loading">لودینگ</button>
+<button data-add="audio">صدا</button>
 </div>
 </div>
 <div class="group">
@@ -159,6 +188,12 @@ body.mobile-access-blocked #mobileAccessBlock{
 <div class="field"><label>گردی گوشه</label><input id="radius" type="number" min="0" max="100"></div>
 </div>
 </div>
+<div class="group" id="gameGroup">
+<h3>بازی و انیمیشن</h3>
+<div class="field"><label>انیمیشن</label><select id="animation"><option value="none">بدون انیمیشن</option><option value="float">شناور</option><option value="pulse">ضربان</option><option value="spin">چرخش</option><option value="bounce">پرش نرم</option><option value="fade">محو و ظاهر</option></select></div>
+<div class="field"><label>متن نمایشی</label><input id="gameLabel" placeholder="مثلاً بازیکن یا امتیاز"></div>
+<p class="preview-note">شخصیت در خروجی بازی با کلیدهای جهت‌دار یا WASD حرکت می‌کند. سکه‌ها با لمس یا کلیک جمع می‌شوند.</p>
+</div>
 <div class="group" id="buttonGroup">
 <h3>عملکرد دکمه</h3>
 <div class="field"><label>متن دکمه</label><input id="buttonText"></div>
@@ -189,7 +224,7 @@ body.mobile-access-blocked #mobileAccessBlock{
 const mmIsMobileDevice = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent);
 if (mmIsMobileDevice) document.body.classList.add('mobile-access-blocked');
 const page=document.getElementById('page'), phone=document.getElementById('phone'), file=document.getElementById('file');
-let S={w:390,h:900,bg:'#ffffff',items:[],selected:null}, hist=[],future=[], drag=null;
+let S={w:390,h:900,bg:'#ffffff',items:[],selected:null,scenes:[],activeScene:null}, hist=[],future=[], drag=null;
 const $=id=>document.getElementById(id);
 const copy=o=>JSON.parse(JSON.stringify(o));
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
@@ -199,12 +234,53 @@ try{
  const saved=JSON.parse(localStorage.getItem(AUTOSAVE_KEY)||'null');
  if(saved&&Array.isArray(saved.items)&&Number.isFinite(+saved.w)&&Number.isFinite(+saved.h)){
   S={w:Math.max(1,+saved.w),h:Math.max(1,+saved.h),bg:typeof saved.bg==='string'?saved.bg:'#ffffff',
-     items:saved.items.filter(it=>it&&typeof it.id==='string'&&['text','box','button','image'].includes(it.type)),
+     items:saved.items.filter(it=>it&&typeof it.id==='string'&&['text','box','button','image','player','platform','coin','enemy','progress','loading','audio'].includes(it.type)),
      selected:typeof saved.selected==='string'?saved.selected:null};
   if(!S.items.some(it=>it.id===S.selected))S.selected=null;
  }
 }catch(error){}
 
+function ensureScenes(){
+ if(!Array.isArray(S.scenes))S.scenes=[];
+ if(!S.activeScene)S.activeScene='scene-main';
+ if(!S.scenes.length)S.scenes=[{id:S.activeScene,name:'صحنه اصلی',w:S.w,h:S.h,bg:S.bg,items:copy(S.items)}];
+ if(!S.scenes.some(sc=>sc.id===S.activeScene))S.activeScene=S.scenes[0].id;
+}
+function storeActiveScene(){
+ ensureScenes();
+ const sc=S.scenes.find(x=>x.id===S.activeScene);
+ if(sc)Object.assign(sc,{w:S.w,h:S.h,bg:S.bg,items:copy(S.items)});
+}
+function renderSceneControls(){
+ const sel=$('sceneSelect');if(!sel)return;
+ sel.innerHTML='';
+ S.scenes.forEach(sc=>{const o=document.createElement('option');o.value=sc.id;o.textContent=sc.name;sel.appendChild(o)});
+ sel.value=S.activeScene;
+}
+function switchScene(id){
+ if(id===S.activeScene)return;
+ storeActiveScene();
+ const sc=S.scenes.find(x=>x.id===id);if(!sc)return;
+ commit();S.activeScene=id;S.w=sc.w||390;S.h=sc.h||900;S.bg=sc.bg||'#fff';S.items=copy(sc.items||[]);S.selected=null;
+ $('pageH').value=S.h;$('bg').value=S.bg;render();
+}
+function addScene(){
+ storeActiveScene();commit();
+ const sc={id:uid(),name:'صحنه '+(S.scenes.length+1),w:S.w,h:S.h,bg:S.bg,items:[]};
+ S.scenes.push(sc);S.activeScene=sc.id;S.w=sc.w;S.h=sc.h;S.bg=sc.bg;S.items=[];S.selected=null;render();
+}
+function duplicateScene(){
+ storeActiveScene();const src=S.scenes.find(x=>x.id===S.activeScene);if(!src)return;commit();
+ const sc=copy(src);sc.id=uid();sc.name=src.name+' - کپی';sc.items.forEach(it=>it.id=uid());
+ S.scenes.push(sc);S.activeScene=sc.id;S.w=sc.w;S.h=sc.h;S.bg=sc.bg;S.items=copy(sc.items);S.selected=null;render();
+}
+function deleteScene(){
+ if(S.scenes.length<=1){msg('حداقل یک صحنه باید باقی بماند');return}
+ if(!confirm('این صحنه حذف شود؟'))return;
+ commit();S.scenes=S.scenes.filter(x=>x.id!==S.activeScene);const sc=S.scenes[0];S.activeScene=sc.id;S.w=sc.w;S.h=sc.h;S.bg=sc.bg;S.items=copy(sc.items||[]);S.selected=null;render();
+}
+$('sceneSelect').addEventListener('change',e=>switchScene(e.target.value));
+$('addScene').onclick=addScene;$('duplicateScene').onclick=duplicateScene;$('deleteScene').onclick=deleteScene;
 function scheduleAutosave(){
  clearTimeout(autosaveTimer);
  autosaveTimer=setTimeout(()=>{
@@ -230,12 +306,23 @@ $('redoBtn').onclick=redo;
 function add(type){
  commit();
  let n={id:uid(),type,name:type==='text'?'متن':type==='box'?'کادر':type==='button'?'دکمه':'تصویر',
- x:35,y:50,w:type==='text'?320:type==='button'?260:300,h:type==='text'?80:type==='button'?55:160,opacity:1,rot:0};
+ x:35,y:50,w:type==='text'?320:type==='button'?260:type==='player'?58:type==='coin'?42:type==='progress'?250:300,h:type==='text'?80:type==='button'?55:type==='player'?58:type==='coin'?42:type==='progress'?22:160,opacity:1,rot:0,animation:'none'};
  if(type==='text')Object.assign(n,{text:'متن جدید',font:'Tahoma',fontSize:32,color:'#111827',weight:700,align:'center'});
  if(type==='box')Object.assign(n,{text:'',font:'Tahoma',fontSize:24,color:'#111827',weight:700,align:'center',fill:'#ffffff',stroke:'#111827',strokeW:2,radius:10});
  if(type==='button')Object.assign(n,{text:'دکمه',fill:'#f59e0b',stroke:'#f59e0b',strokeW:0,radius:10,font:'Tahoma',fontSize:18,color:'#ffffff',weight:700,align:'center',action:'url',target:'https://example.com',newTab:'blank'});
+ if(type==='player')Object.assign(n,{name:'شخصیت',label:'بازیکن',fill:'#2563eb'});
+ if(type==='platform')Object.assign(n,{name:'سکو',label:'',fill:'#475569',w:180,h:28});
+ if(type==='coin')Object.assign(n,{name:'سکه',label:'+',fill:'#eab308'});
+ if(type==='enemy')Object.assign(n,{name:'مانع',label:'!',fill:'#e11d48',w:65,h:65});
+ if(type==='progress')Object.assign(n,{name:'نوار پیشرفت',label:'',value:65});
+ if(type==='loading')Object.assign(n,{name:'لودینگ',label:'در حال بارگذاری...',w:220,h:58});
+ if(type==='audio'){n.name='پخش صدا';n.src='';file.accept='audio/*';file.onchange=loadAudio;file.click();return}
  if(type==='image'){n.src='';file.accept='image/*';file.onchange=loadImage;file.click();return}
  S.items.push(n);S.selected=n.id;render()
+}
+function loadAudio(e){
+ const f=e.target.files[0];if(!f)return;
+ const reader=new FileReader();reader.onload=()=>{commit();const n={id:uid(),type:'audio',name:'پخش صدا',x:40,y:50,w:220,h:54,opacity:1,rot:0,src:reader.result,label:f.name,animation:'none'};S.items.push(n);S.selected=n.id;render()};reader.readAsDataURL(f);file.value='';
 }
 function loadImage(e){
  const f=e.target.files[0];if(!f)return;
@@ -243,7 +330,7 @@ function loadImage(e){
 }
 function render(){
  page.style.width=S.w+'px';page.style.height=S.h+'px';page.style.background=S.bg;
- page.innerHTML='';
+ page.innerHTML='';renderSceneControls();
  // Built-in channel button: always attached to the page itself.
  const channelBtn=document.createElement('a');
  channelBtn.href='https://rubika.ir/AnimalRush_MM';
@@ -261,12 +348,17 @@ function render(){
  });
  page.appendChild(channelBtn);
  S.items.forEach(it=>{
-  const el=document.createElement('div');el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.id===S.selected?' selected':'');
+  const el=document.createElement('div');
+  const gameTypes=['player','platform','coin','enemy','progress','loading'];
+  el.className='element '+(gameTypes.includes(it.type)?'game-el game-'+it.type:it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.animation&&it.animation!=='none'?' mm-anim-'+it.animation:'')+(it.id===S.selected?' selected':'');
   el.dataset.id=it.id;Object.assign(el.style,{left:it.x+'px',top:it.y+'px',width:it.w+'px',height:it.h+'px',opacity:it.opacity??1,transform:`rotate(${it.rot||0}deg)`});
   if(it.type==='text'){el.textContent=it.text||'';Object.assign(el.style,{fontFamily:it.font,fontSize:it.fontSize+'px',fontWeight:it.weight,color:it.color,textAlign:it.align,lineHeight:'1.25'})}
   if(it.type==='box'){el.textContent=it.text||'';Object.assign(el.style,{display:'flex',alignItems:'center',justifyContent:'center',whiteSpace:'pre-wrap',overflow:'hidden',fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||700,color:it.color||'#111827',textAlign:it.align||'center',lineHeight:'1.25',background:it.fill||'#fff',border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'})}
   if(it.type==='button'){el.textContent=it.text||'دکمه';Object.assign(el.style,{background:it.fill,color:it.color,fontFamily:it.font,fontSize:it.fontSize+'px',fontWeight:it.weight,border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'});el.addEventListener('dblclick',()=>runAction(it))}
   if(it.type==='image'){const img=document.createElement('img');img.src=it.src;Object.assign(img.style,{width:'100%',height:'100%',objectFit:'contain',pointerEvents:'none'});el.appendChild(img)}
+  if(it.type==='player'||it.type==='enemy'||it.type==='coin'||it.type==='platform'){el.textContent=it.label|| (it.type==='coin'?'+':it.type==='enemy'?'!':'');}
+  if(it.type==='progress'){const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,+it.value||0))+'%';el.appendChild(fill)}
+  if(it.type==='loading'){const spin=document.createElement('i');el.append(spin,document.createTextNode(it.label||'در حال بارگذاری...'));}
   // Green crosshair is centered inside each button, box, text element, and image.
   // It is a visual editor overlay only; it is not a layer and is never exported.
   const guide=document.createElement('span');guide.className='element-guide';guide.setAttribute('aria-hidden','true');
@@ -331,6 +423,8 @@ function renderProps(){
  $('textGroup').style.display=it.type==='text'||it.type==='button'||it.type==='box'?'block':'none';
  $('shapeGroup').style.display=it.type==='box'||it.type==='button'?'block':'none';
  $('buttonGroup').style.display=it.type==='button'?'block':'none';
+ $('gameGroup').style.display=['player','platform','coin','enemy','progress','loading','audio'].includes(it.type)?'block':'none';
+ $('animation').value=it.animation||'none';$('gameLabel').value=it.label||'';
  if(it.type==='text'||it.type==='button'||it.type==='box'){ $('text').value=it.text||'';$('font').value=it.font||'Tahoma';$('fontSize').value=it.fontSize||24;$('textColor').value=it.color||'#111827';$('weight').value=it.weight||700;$('align').value=it.align||'center'}
  if(it.type==='box'||it.type==='button'){$('fill').value=it.fill||'#fff';$('stroke').value=it.stroke||'#111827';$('strokeW').value=it.strokeW??2;$('radius').value=it.radius??0}
  if(it.type==='button'){$('buttonText').value=it.text||'';$('action').value=it.action||'url';$('target').value=it.target||'';$('newTab').value=it.newTab||'blank';$('scrollTarget').value=it.scrollTarget||'';toggleAction()}
@@ -352,8 +446,25 @@ function updateElement(it){
   const el=page.querySelector(`[data-id="${it.id}"]`);
   if(!el)return;
   Object.assign(el.style,{left:(it.x||0)+'px',top:(it.y||0)+'px',width:Math.max(1,it.w||1)+'px',height:Math.max(1,it.h||1)+'px',opacity:it.opacity??1,transform:`rotate(${it.rot||0}deg)`});
-  el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.id===S.selected?' selected':'');
-  if(it.type==='text'){
+  el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.animation&&it.animation!=='none'?' mm-anim-'+it.animation:'')+(it.id===S.selected?' selected':'');
+  if(it.type==='player'||it.type==='platform'||it.type==='coin'||it.type==='enemy'||it.type==='progress'||it.type==='loading'){
+    el.className='element game-el game-'+it.type+(it.animation&&it.animation!=='none'?' mm-anim-'+it.animation:'')+(it.id===S.selected?' selected':'');
+    el.innerHTML='';
+    if(it.type==='progress'){const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,+it.value||0))+'%';el.appendChild(fill)}
+    else if(it.type==='loading'){const spin=document.createElement('i');spin.style.cssText='width:22px;height:22px;border:3px solid #64748b;border-top-color:#fbbf24;border-radius:50%;animation:mmSpin .8s linear infinite';el.append(spin,document.createTextNode(it.label||'در حال بارگذاری...'))}
+    else el.textContent=it.label|| (it.type==='coin'?'+':it.type==='enemy'?'!':'');
+    if(it.type==='player')Object.assign(el.style,{borderRadius:'16px',background:it.fill||'linear-gradient(145deg,#38bdf8,#1d4ed8)',color:'#fff',border:'3px solid #dbeafe'});
+    if(it.type==='platform')Object.assign(el.style,{background:it.fill||'linear-gradient(#64748b,#334155)',border:'2px solid #cbd5e1',borderRadius:'8px'});
+    if(it.type==='coin')Object.assign(el.style,{borderRadius:'50%',background:it.fill||'radial-gradient(circle at 35% 30%,#fef08a,#eab308 65%,#a16207)',border:'3px solid #facc15',color:'#713f12'});
+    if(it.type==='enemy')Object.assign(el.style,{borderRadius:'12px',background:it.fill||'linear-gradient(145deg,#fb7185,#be123c)',color:'#fff',border:'2px solid #fecdd3'});
+    if(it.type==='progress')Object.assign(el.style,{background:'#e2e8f0',border:'2px solid #475569',borderRadius:'20px',overflow:'hidden'});
+    if(it.type==='loading')Object.assign(el.style,{background:'#0f172a',color:'#f8fafc',borderRadius:'12px',gap:'8px'});
+    const rh=el.querySelector('.resize');const guide=el.querySelector('.element-guide');const oldRh=el.querySelector('.resize');
+    if(guide)el.appendChild(guide);if(oldRh)el.appendChild(oldRh);
+  }else if(it.type==='audio'){
+    el.className='element '+(it.id===S.selected?'selected':'');
+    el.innerHTML='';const audio=document.createElement('audio');audio.controls=true;audio.src=it.src||'';audio.style.width='100%';el.appendChild(audio);
+  }else if(it.type==='text'){
     const rh=el.querySelector('.resize');
     const guide=el.querySelector('.element-guide');
     [...el.childNodes].forEach(n=>{if(n!==rh&&n!==guide)el.removeChild(n)});
@@ -375,8 +486,8 @@ function updateElement(it){
   }
   scheduleAutosave();
 }
-['name','x','y','w','h','rot','opacity','text','font','fontSize','textColor','weight','align','fill','stroke','strokeW','radius','buttonText','action','target','newTab','scrollTarget'].forEach(id=>{
- const key=id==='textColor'?'color':id==='buttonText'?'text':id;
+['name','x','y','w','h','rot','opacity','text','font','fontSize','textColor','weight','align','fill','stroke','strokeW','radius','buttonText','action','target','newTab','scrollTarget','animation','gameLabel'].forEach(id=>{
+ const key=id==='textColor'?'color':id==='buttonText'?'text':id==='gameLabel'?'label':id;
  if($(id))bind(id,key)
 });
 $('action').addEventListener('change',toggleAction);
@@ -414,6 +525,7 @@ $('save').onclick=()=>{const clean=copy(S);download(new Blob([JSON.stringify(cle
 $('open').onclick=()=>{file.accept='.json';file.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{commit();S=JSON.parse(await f.text());render();msg('پروژه باز شد')}catch{alert('فایل پروژه معتبر نیست')}file.value=''};file.click()};
 $('export').onclick=()=>exportHTML(false);$('preview').onclick=()=>exportHTML(true);
 function exportHTML(preview){
+ storeActiveScene();
  const builtInChannel = `<a href="https://rubika.ir/AnimalRush_MM" target="_blank" rel="noopener" style="position:absolute;left:10px;top:10px;z-index:9999;display:flex;align-items:center;justify-content:center;min-width:145px;height:42px;padding:0 12px;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;font-family:Tahoma,Arial,sans-serif;font-size:13px;font-weight:700;box-shadow:0 3px 10px #0003">کانال اصلی روبیکا</a>`;
  const body=S.items.map(it=>{
   let style=`position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;opacity:${it.opacity??1};transform:rotate(${it.rot||0}deg);box-sizing:border-box;`;
@@ -421,10 +533,24 @@ function exportHTML(preview){
   if(it.type==='text')style+=`font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};color:${it.color};text-align:${it.align};white-space:pre-wrap;overflow:hidden;line-height:1.25;`;inner=esc(it.text||'');
   if(it.type==='box'){style+=`display:flex;align-items:center;justify-content:center;white-space:pre-wrap;overflow:hidden;font-family:${it.font||'Tahoma'};font-size:${it.fontSize||24}px;font-weight:${it.weight||700};color:${it.color||'#111827'};text-align:${it.align||'center'};line-height:1.25;background:${it.fill||'#fff'};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'')}
   if(it.type==='image')inner=`<img src="${it.src}" style="width:100%;height:100%;object-fit:contain">`;
+  if(it.type==='player')style+=`display:flex;align-items:center;justify-content:center;border-radius:16px;background:${it.fill||'linear-gradient(145deg,#38bdf8,#1d4ed8)'};color:#fff;border:3px solid #dbeafe;`;
+  if(it.type==='platform')style+=`background:${it.fill||'linear-gradient(#64748b,#334155)'};border:2px solid #cbd5e1;border-radius:8px;`;
+  if(it.type==='coin')style+=`display:flex;align-items:center;justify-content:center;border-radius:50%;background:${it.fill||'radial-gradient(circle at 35% 30%,#fef08a,#eab308 65%,#a16207)'};border:3px solid #facc15;color:#713f12;`;
+  if(it.type==='enemy')style+=`display:flex;align-items:center;justify-content:center;border-radius:12px;background:${it.fill||'linear-gradient(145deg,#fb7185,#be123c)'};color:white;border:2px solid #fecdd3;`;
+  if(it.type==='progress')inner=`<i style="display:block;height:100%;width:${Math.max(0,Math.min(100,+it.value||0))}%;background:linear-gradient(90deg,#22c55e,#86efac)"></i>`,style+=`background:#e2e8f0;border:2px solid #475569;border-radius:20px;overflow:hidden;`;
+  if(it.type==='loading')inner=`<i style="width:22px;height:22px;border:3px solid #64748b;border-top-color:#fbbf24;border-radius:50%;animation:mmSpin .8s linear infinite"></i>${esc(it.label||'در حال بارگذاری...')}`,style+=`display:flex;align-items:center;justify-content:center;gap:8px;background:#0f172a;color:#fff;border-radius:12px;`;
+  if(it.type==='audio')return `<div style="${style}"><audio controls src="${it.src||''}" style="width:100%"></audio></div>`;
+  if(['player','platform','coin','enemy'].includes(it.type))inner=esc(it.label||(it.type==='coin'?'+':it.type==='enemy'?'!':'')); 
+  if(it.animation&&it.animation!=='none')style+=`animation:mm_${it.animation} 1.8s ease-in-out infinite;`;
   if(it.type==='button'){style+=`display:flex;align-items:center;justify-content:center;text-align:center;background:${it.fill};color:${it.color};font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'دکمه');let fn=actionJS(it);return `<div style="${style};cursor:pointer" onclick="${escAttr(fn)}">${inner}</div>`}
-  return `<div style="${style}">${inner}</div>`
+  return `<div data-game="${it.type==='coin'?'coin':it.type==='player'?'player':''}" style="${style}">${inner}</div>`
  }).join('');
- const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحه MM</title></head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
+ const runtime=`<style>@keyframes mm_float{50%{translate:0 -12px}}@keyframes mm_pulse{50%{scale:1.08}}@keyframes mm_spin{to{transform:rotate(360deg)}}@keyframes mm_bounce{50%{translate:0 -10px}}@keyframes mm_fade{50%{opacity:.25}}</style><script>
+let score=0;document.querySelectorAll('[data-game="coin"]').forEach(c=>c.addEventListener('click',()=>{c.remove();score++;document.querySelectorAll('[data-score]').forEach(x=>x.textContent=score)}));
+const player=document.querySelector('[data-game="player"]');if(player){let x=parseFloat(player.style.left)||0,y=parseFloat(player.style.top)||0;const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});function move(){if(keys.arrowleft||keys.a)x-=3;if(keys.arrowright||keys.d)x+=3;if(keys.arrowup||keys.w)y-=3;if(keys.arrowdown||keys.s)y+=3;x=Math.max(0,Math.min(${S.w}-player.offsetWidth,x));y=Math.max(0,Math.min(${S.h}-player.offsetHeight,y));player.style.left=x+'px';player.style.top=y+'px';requestAnimationFrame(move)}move()}
+</script>`;
+ const bodyGame=body.replace(/<div style="([^"]*)">([^<]*)<\\/div>/g,(m,st,tx)=>m);
+ const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بازی ساخته‌شده با MM</title>${runtime}</head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
  if(preview){const w=window.open();w.document.write(out);w.document.close()}else download(new Blob([out],{type:'text/html;charset=utf-8'}),'mm-mobile-page.html')
 }
 function actionJS(it){
@@ -448,7 +574,7 @@ window.addEventListener('keydown',e=>{
  // Mobile keyboards can emit the Delete key while clearing the button-text input.
  if(e.key==='Delete'&&!typing){$('delete').click()}
 });
-render();
+ensureScenes();render();
 </script>
 </body>
 </html>
