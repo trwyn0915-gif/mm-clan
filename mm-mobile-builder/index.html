@@ -226,6 +226,21 @@ if (mmIsMobileDevice) document.body.classList.add('mobile-access-blocked');
 const page=document.getElementById('page'), phone=document.getElementById('phone'), file=document.getElementById('file');
 let S={w:390,h:900,bg:'#ffffff',items:[],selected:null,scenes:[],activeScene:null}, hist=[],future=[], drag=null;
 const $=id=>document.getElementById(id);
+
+// Reliable delegated handler for every Add-panel control. It is registered
+// before editor initialization so an unrelated startup/render issue cannot
+// silently leave the palette without click handling.
+document.addEventListener('click',e=>{
+ const button=e.target.closest('button[data-add]');
+ if(!button)return;
+ e.preventDefault();
+ try{add(button.dataset.add)}
+ catch(error){
+  console.error('MM Builder add error:',error);
+  const status=document.getElementById('status');
+  if(status)status.textContent='افزودن عنصر با خطا روبه‌رو شد: '+(error&&error.message?error.message:'خطای نامشخص');
+ }
+},true);
 const copy=o=>JSON.parse(JSON.stringify(o));
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 const AUTOSAVE_KEY='mm-mobile-builder-autosave-v2';
@@ -521,7 +536,6 @@ $('bg').addEventListener('input',()=>{S.bg=$('bg').value;page.style.background=S
 $('applyPage').onclick=()=>{commit();S.bg=$('bg').value||'#ffffff';S.h=Math.max(400,+$('pageH').value||900);render();msg('تنظیمات صفحه اعمال شد')};
 $('whiteBg').onclick=()=>{commit();S.bg='#ffffff';$('bg').value='#ffffff';render();msg('پس‌زمینه سفید شد')};
 document.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{const [w,h]=b.dataset.size.split('x');S.w=+w;S.h=+h;$('pageH').value=h;render()});
-document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
 $('new').onclick=()=>{if(confirm('پروژه پاک شود؟')){commit();S={w:390,h:900,bg:'#ffffff',items:[],selected:null};render()}};
 $('save').onclick=()=>{const clean=copy(S);download(new Blob([JSON.stringify(clean,null,2)],{type:'application/json'}),'mm-mobile-project.json');msg('پروژه ذخیره شد')};
 $('open').onclick=()=>{file.accept='.json';file.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{commit();S=JSON.parse(await f.text());render();msg('پروژه باز شد')}catch{alert('فایل پروژه معتبر نیست')}file.value=''};file.click()};
