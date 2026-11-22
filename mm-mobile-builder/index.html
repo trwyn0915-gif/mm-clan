@@ -450,6 +450,7 @@ function updateElement(it){
   Object.assign(el.style,{left:(it.x||0)+'px',top:(it.y||0)+'px',width:Math.max(1,it.w||1)+'px',height:Math.max(1,it.h||1)+'px',opacity:it.opacity??1,transform:`rotate(${it.rot||0}deg)`});
   el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.animation&&it.animation!=='none'?' mm-anim-'+it.animation:'')+(it.id===S.selected?' selected':'');
   if(it.type==='player'||it.type==='platform'||it.type==='coin'||it.type==='enemy'||it.type==='progress'||it.type==='loading'){
+    const guide=el.querySelector('.element-guide'),handle=el.querySelector('.resize');
     el.className='element game-el game-'+it.type+(it.animation&&it.animation!=='none'?' mm-anim-'+it.animation:'')+(it.id===S.selected?' selected':'');
     el.innerHTML='';
     if(it.type==='progress'){const fill=document.createElement('i');fill.style.width=Math.max(0,Math.min(100,+it.value||0))+'%';el.appendChild(fill)}
@@ -461,8 +462,7 @@ function updateElement(it){
     if(it.type==='enemy')Object.assign(el.style,{borderRadius:'12px',background:it.fill||'linear-gradient(145deg,#fb7185,#be123c)',color:'#fff',border:'2px solid #fecdd3'});
     if(it.type==='progress')Object.assign(el.style,{background:'#e2e8f0',border:'2px solid #475569',borderRadius:'20px',overflow:'hidden'});
     if(it.type==='loading')Object.assign(el.style,{background:'#0f172a',color:'#f8fafc',borderRadius:'12px',gap:'8px'});
-    const rh=el.querySelector('.resize');const guide=el.querySelector('.element-guide');const oldRh=el.querySelector('.resize');
-    if(guide)el.appendChild(guide);if(oldRh)el.appendChild(oldRh);
+    if(guide)el.appendChild(guide);if(handle)el.appendChild(handle);
   }else if(it.type==='audio'){
     el.className='element '+(it.id===S.selected?'selected':'');
     el.innerHTML='';const audio=document.createElement('audio');audio.controls=true;audio.src=it.src||'';audio.style.width='100%';el.appendChild(audio);
