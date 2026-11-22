@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MM Mobile Page Builder</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#0f172a;color:#f8fafc;overflow:hidden}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:1px solid #334155;background:#1e293b;color:#fff;border-radius:8px;padding:8px 10px}
+button:hover{background:#334155}
+.app{height:100vh;display:grid;grid-template-rows:56px 1fr}
+.top{display:flex;gap:7px;align-items:center;padding:8px 10px;background:#080d17;border-bottom:1px solid #334155;overflow:auto;white-space:nowrap}
+.brand{font-weight:800;color:#fbbf24;margin-left:7px}.spacer{flex:1}
+.main{display:grid;grid-template-columns:235px 1fr 285px;min-height:0}
+.panel{background:#172033;overflow:auto;padding:12px}.left{border-left:1px solid #334155}.right{border-right:1px solid #334155}
+h3{font-size:14px;margin:4px 0 10px}.group{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #334155}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid button{min-height:40px}
+.field{margin-bottom:8px}.field label{display:block;font-size:11px;color:#94a3b8;margin-bottom:4px}
+input,select,textarea{width:100%;border:1px solid #334155;background:#0f172a;color:#fff;border-radius:7px;padding:7px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:6px;flex-wrap:wrap}.row>*{flex:1}
+.workspace{overflow:auto;background:#0b1220;display:flex;align-items:flex-start;justify-content:center;padding:30px}
+.phone{width:390px;min-height:844px;background:#fff;color:#111;position:relative;box-shadow:0 20px 60px #0009;border:8px solid #020617;border-radius:28px;overflow:hidden}
+#page{position:relative;width:100%;min-height:828px;background:#fff}
+.element{position:absolute;user-select:none;touch-action:none}
+.element.selected{outline:2px solid #f59e0b;outline-offset:2px}
+.element .resize{display:none;position:absolute;width:10px;height:10px;background:#fff;border:2px solid #f59e0b;right:-6px;bottom:-6px;border-radius:2px}
+.element.selected .resize{display:block}
+.text-el{white-space:pre-wrap;overflow:hidden}
+.box-el{border:2px solid #111827;background:#fff}
+.button-el{display:flex;align-items:center;justify-content:center;text-align:center;border:0}
+.image-el{object-fit:contain}
+/* Green center crosshairs on every editor element. They are editor-only and never exported. */
+.element-guide{position:absolute;inset:0;pointer-events:none;z-index:20;overflow:visible}
+.element-guide::before,.element-guide::after{content:"";position:absolute;pointer-events:none;opacity:.92}
+/* Horizontal line passes through the exact 50% center and extends 48px beyond both sides. */
+.element-guide::before{left:-48px;right:-48px;top:50%;height:0;border-top:1px dashed #22c55e;transform:translateY(-.5px);filter:drop-shadow(0 0 1px #fff)}
+/* Vertical line passes through the exact 50% center and extends 48px beyond top/bottom. */
+.element-guide::after{top:-48px;bottom:-48px;left:50%;width:0;border-left:1px dashed #22c55e;transform:translateX(-.5px);filter:drop-shadow(0 0 1px #fff)}
+.element-guide .guide-center{position:absolute;left:50%;top:50%;width:5px;height:5px;transform:translate(-50%,-50%);border:1px solid #16a34a;background:#dcfce7;border-radius:50%;box-shadow:0 0 0 1px #fff}
+.layer{display:flex;align-items:center;gap:6px;background:#0f172a;border:1px solid #334155;border-radius:7px;padding:7px;margin-bottom:5px}
+.layer.active{border-color:#f59e0b}.layer span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.layer button{padding:3px 7px}.layer .layer-order{min-width:28px;padding:3px 5px;background:#1e293b;border:1px solid #475569;color:#e2e8f0}.layer .layer-order:disabled{opacity:.3}
+.preview-note{font-size:11px;color:#94a3b8;line-height:1.6}
+#file{display:none}
+@media(max-width:1000px){.main{grid-template-columns:200px 1fr}.right{display:none}}
+@media(max-width:650px){.main{grid-template-columns:1fr}.left{display:none}.workspace{padding:15px}.phone{transform-origin:top center}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <b class="brand">MM Mobile Builder</b>
+  <button id="new">جدید</button>
+  <button id="save">ذخیره پروژه</button>
+  <button id="open">باز کردن</button>
+  <button id="export">خروجی HTML</button>
+  <button id="preview">پیش‌نمایش</button>
+  <div class="spacer"></div><span id="status"></span>
+</header>
+<div class="main">
+<aside class="panel left">
+<div class="group">
+<h3>افزودن</h3>
+<div class="grid">
+<button data-add="text">📝 متن</button>
+<button data-add="box">▭ کادر</button>
+<button data-add="button">🔘 دکمه</button>
+<button data-add="image">🖼 تصویر</button>
+</div>
+</div>
+<div class="group">
+<h3>صفحه</h3>
+<div class="field"><label>رنگ پس‌زمینه</label><input id="bg" type="color" value="#ffffff"></div>
+<div class="field"><label>ارتفاع صفحه</label><input id="pageH" type="number" value="900" min="400" max="5000"></div>
+<div class="row"><button id="applyPage" style="flex:2">اعمال</button><button id="whiteBg" style="flex:1">سفید</button></div>
+</div>
+<div class="group">
+<h3>اندازه آماده موبایل</h3>
+<div class="row">
+<button data-size="390x844">موبایل</button>
+<button data-size="360x800">کوچک</button>
+</div>
+</div>
+<div class="group">
+<h3>نکته</h3>
+<div class="preview-note">این ابزار برای ساخت صفحه‌های تبلیغاتی و موبایلی طراحی شده. عناصر را انتخاب کن و از پنل سمت راست متن، رنگ، اندازه و رفتار دکمه را تنظیم کن.</div>
+</div>
+</aside>
+
+<section class="workspace">
+<div class="phone" id="phone"><div id="page"></div></div>
+</section>
+
+<aside class="panel right">
+<div class="group">
+<h3>لایه‌ها</h3><div id="layers"></div>
+</div>
+<div id="props">
+<div class="group">
+<h3>خصوصیات</h3>
+<div class="field"><label>نام عنصر</label><input id="name"></div>
+<div class="grid">
+<div class="field"><label>X</label><input id="x" type="number"></div>
+<div class="field"><label>Y</label><input id="y" type="number"></div>
+<div class="field"><label>عرض</label><input id="w" type="number"></div>
+<div class="field"><label>ارتفاع</label><input id="h" type="number"></div>
+<div class="field"><label>چرخش</label><input id="rot" type="number"></div>
+<div class="field"><label>شفافیت</label><input id="opacity" type="number" min="0" max="1" step=".05"></div>
+</div>
+</div>
+<div class="group" id="textGroup">
+<h3>متن</h3>
+<div class="field"><label>متن</label><textarea id="text"></textarea></div>
+<div class="grid">
+<div class="field"><label>فونت</label><select id="font"><option>Tahoma</option><option>Arial</option><option>Verdana</option><option>Georgia</option><option>Courier New</option></select></div>
+<div class="field"><label>اندازه</label><input id="fontSize" type="number" min="8" max="180"></div>
+<div class="field"><label>رنگ متن</label><input id="textColor" type="color"></div>
+<div class="field"><label>ضخامت</label><select id="weight"><option value="400">معمولی</option><option value="700">بولد</option><option value="900">خیلی بولد</option></select></div>
+<div class="field"><label>تراز</label><select id="align"><option value="right">راست</option><option value="center">وسط</option><option value="left">چپ</option></select></div>
+</div>
+</div>
+<div class="group" id="shapeGroup">
+<h3>کادر / دکمه</h3>
+<div class="grid">
+<div class="field"><label>رنگ داخل</label><input id="fill" type="color"></div>
+<div class="field"><label>رنگ حاشیه</label><input id="stroke" type="color"></div>
+<div class="field"><label>ضخامت حاشیه</label><input id="strokeW" type="number" min="0" max="30"></div>
+<div class="field"><label>گردی گوشه</label><input id="radius" type="number" min="0" max="100"></div>
+</div>
+</div>
+<div class="group" id="buttonGroup">
+<h3>عملکرد دکمه</h3>
+<div class="field"><label>متن دکمه</label><input id="buttonText"></div>
+<div class="field"><label>با کلیک چه شود؟</label>
+<select id="action">
+<option value="url">باز کردن لینک</option>
+<option value="channel">رفتن به لینک کانال</option>
+<option value="telegram">باز کردن تلگرام</option>
+<option value="rubika">باز کردن روبیکا</option>
+<option value="call">تماس تلفنی</option>
+<option value="email">ارسال ایمیل</option>
+<option value="scroll">رفتن به بخش صفحه</option>
+<option value="none">بدون عمل</option>
+</select></div>
+<div class="field" id="targetWrap"><label>آدرس / مقصد</label><input id="target" placeholder="https://example.com"></div>
+<div class="field" id="scrollWrap" style="display:none"><label>شناسه بخش</label><input id="scrollTarget" placeholder="مثلاً about"></div>
+<div class="field"><label>باز شدن لینک</label><select id="newTab"><option value="blank">صفحه جدید</option><option value="same">همین صفحه</option></select></div>
+</div>
+<div class="row"><button id="dup">کپی</button><button id="up">بالا</button><button id="down">پایین</button><button id="delete">حذف</button></div>
+</div>
+<div id="empty" class="preview-note">یک عنصر را انتخاب کن.</div>
+</aside>
+</div>
+</div>
+<input id="file" type="file" accept=".json,image/*">
+
+<script>
+const page=document.getElementById('page'), phone=document.getElementById('phone'), file=document.getElementById('file');
+let S={w:390,h:900,bg:'#ffffff',items:[],selected:null}, hist=[],future=[], drag=null;
+const $=id=>document.getElementById(id);
+const copy=o=>JSON.parse(JSON.stringify(o));
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+function snap(){return copy(S)}
+function commit(){hist.push(snap());if(hist.length>80)hist.shift();future=[]}
+function undo(){if(!hist.length)return;future.push(snap());S=hist.pop();render()}
+function redo(){if(!future.length)return;hist.push(snap());S=future.pop();render()}
+
+function add(type){
+ commit();
+ let n={id:uid(),type,name:type==='text'?'متن':type==='box'?'کادر':type==='button'?'دکمه':'تصویر',
+ x:35,y:50,w:type==='text'?320:type==='button'?260:300,h:type==='text'?80:type==='button'?55:160,opacity:1,rot:0};
+ if(type==='text')Object.assign(n,{text:'متن جدید',font:'Tahoma',fontSize:32,color:'#111827',weight:700,align:'center'});
+ if(type==='box')Object.assign(n,{text:'',font:'Tahoma',fontSize:24,color:'#111827',weight:700,align:'center',fill:'#ffffff',stroke:'#111827',strokeW:2,radius:10});
+ if(type==='button')Object.assign(n,{text:'دکمه',fill:'#f59e0b',stroke:'#f59e0b',strokeW:0,radius:10,font:'Tahoma',fontSize:18,color:'#ffffff',weight:700,align:'center',action:'url',target:'https://example.com',newTab:'blank'});
+ if(type==='image'){n.src='';file.accept='image/*';file.onchange=loadImage;file.click();return}
+ S.items.push(n);S.selected=n.id;render()
+}
+function loadImage(e){
+ const f=e.target.files[0];if(!f)return;
+ const reader=new FileReader();reader.onload=()=>{commit();const im=new Image();im.onload=()=>{let ratio=Math.min(300/im.width,180/im.height,1);let n={id:uid(),type:'image',name:'تصویر',x:40,y:50,w:im.width*ratio,h:im.height*ratio,opacity:1,rot:0,src:reader.result};S.items.push(n);S.selected=n.id;render()};im.src=reader.result};reader.readAsDataURL(f);file.value=''
+}
+function render(){
+ page.style.width=S.w+'px';page.style.height=S.h+'px';page.style.background=S.bg;
+ page.innerHTML='';
+ // Built-in channel button: always attached to the page itself.
+ const channelBtn=document.createElement('a');
+ channelBtn.href='https://rubika.ir/AnimalRush_MM';
+ channelBtn.target='_blank';
+ channelBtn.rel='noopener';
+ channelBtn.textContent='کانال اصلی روبیکا';
+ channelBtn.title='ورود به کانال اصلی Animal Rush MM';
+ Object.assign(channelBtn.style,{
+   position:'absolute',left:'10px',top:'10px',zIndex:'9999',
+   display:'flex',alignItems:'center',justifyContent:'center',
+   minWidth:'145px',height:'42px',padding:'0 12px',
+   background:'#2563eb',color:'#fff',textDecoration:'none',
+   borderRadius:'10px',fontFamily:'Tahoma,Arial,sans-serif',
+   fontSize:'13px',fontWeight:'700',boxShadow:'0 3px 10px #0003'
+ });
+ page.appendChild(channelBtn);
+ S.items.forEach(it=>{
+  const el=document.createElement('div');el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.id===S.selected?' selected':'');
+  el.dataset.id=it.id;Object.assign(el.style,{left:it.x+'px',top:it.y+'px',width:it.w+'px',height:it.h+'px',opacity:it.opacity??1,transform:`rotate(${it.rot||0}deg)`});
+  if(it.type==='text'){el.textContent=it.text||'';Object.assign(el.style,{fontFamily:it.font,fontSize:it.fontSize+'px',fontWeight:it.weight,color:it.color,textAlign:it.align,lineHeight:'1.25'})}
+  if(it.type==='box'){el.textContent=it.text||'';Object.assign(el.style,{display:'flex',alignItems:'center',justifyContent:'center',whiteSpace:'pre-wrap',overflow:'hidden',fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||700,color:it.color||'#111827',textAlign:it.align||'center',lineHeight:'1.25',background:it.fill||'#fff',border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'})}
+  if(it.type==='button'){el.textContent=it.text||'دکمه';Object.assign(el.style,{background:it.fill,color:it.color,fontFamily:it.font,fontSize:it.fontSize+'px',fontWeight:it.weight,border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'});el.addEventListener('dblclick',()=>runAction(it))}
+  if(it.type==='image'){const img=document.createElement('img');img.src=it.src;Object.assign(img.style,{width:'100%',height:'100%',objectFit:'contain',pointerEvents:'none'});el.appendChild(img)}
+  // Green crosshair is centered inside each button, box, text element, and image.
+  // It is a visual editor overlay only; it is not a layer and is never exported.
+  const guide=document.createElement('span');guide.className='element-guide';guide.setAttribute('aria-hidden','true');
+  const guideCenter=document.createElement('i');guideCenter.className='guide-center';guide.appendChild(guideCenter);el.appendChild(guide);
+  const rh=document.createElement('i');rh.className='resize';el.appendChild(rh);
+  el.addEventListener('pointerdown',e=>startDrag(e,it,rh));
+  page.appendChild(el)
+ });
+ renderLayers();renderProps()
+}
+function startDrag(e,it,rh){
+ e.stopPropagation();S.selected=it.id;
+ const r=page.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
+ drag={it,startX:sx,startY:sy,ox:it.x,oy:it.y,ow:it.w,oh:it.h,resize:e.target===rh};commit();
+ e.currentTarget.setPointerCapture(e.pointerId)
+}
+page.addEventListener('pointermove',e=>{
+ if(!drag)return;const r=page.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dx=x-drag.startX,dy=y-drag.startY,it=drag.it;
+ if(drag.resize){it.w=Math.max(10,drag.ow+dx);it.h=Math.max(10,drag.oh+dy)}
+ else{it.x=Math.max(0,Math.min(S.w-it.w,drag.ox+dx));it.y=Math.max(0,Math.min(S.h-it.h,drag.oy+dy))}
+ render()
+});
+page.addEventListener('pointerup',()=>drag=null);
+page.addEventListener('pointerdown',e=>{if(e.target===page){S.selected=null;render()}});
+function renderLayers(){
+ const box=$('layers');box.innerHTML='';
+ // Array order controls stacking: later items are drawn above earlier ones.
+ // Show topmost layers first and let each row move its own layer forward/backward.
+ [...S.items].reverse().forEach(it=>{
+  const d=document.createElement('div');d.className='layer'+(it.id===S.selected?' active':'');
+  const label=document.createElement('span');label.textContent=it.name||it.type;
+  const up=document.createElement('button');up.className='layer-order';up.type='button';up.textContent='⬆️';up.title='بردن جلو';up.setAttribute('aria-label','بردن لایه جلو');
+  const down=document.createElement('button');down.className='layer-order';down.type='button';down.textContent='⬇️';down.title='بردن عقب';down.setAttribute('aria-label','بردن لایه عقب');
+  const del=document.createElement('button');del.type='button';del.textContent='×';del.title='حذف لایه';
+  const idx=S.items.findIndex(x=>x.id===it.id);
+  up.disabled=idx===S.items.length-1;down.disabled=idx===0;
+  up.addEventListener('click',e=>{e.stopPropagation();moveLayerById(it.id,1)});
+  down.addEventListener('click',e=>{e.stopPropagation();moveLayerById(it.id,-1)});
+  del.addEventListener('click',e=>{e.stopPropagation();commit();S.items=S.items.filter(x=>x.id!==it.id);if(S.selected===it.id)S.selected=S.items.length?S.items[S.items.length-1].id:null;render()});
+  d.append(label,up,down,del);
+  d.addEventListener('click',()=>{S.selected=it.id;render()});
+  box.appendChild(d);
+ })
+}
+function moveLayerById(id,delta){
+ const i=S.items.findIndex(x=>x.id===id),j=i+delta;
+ if(i<0||j<0||j>=S.items.length)return;
+ commit();[S.items[i],S.items[j]]=[S.items[j],S.items[i]];S.selected=id;render();
+}
+function renderProps(){
+ const it=S.items.find(x=>x.id===S.selected);$('empty').style.display=it?'none':'block';$('props').style.display=it?'block':'none';if(!it)return;
+ ['name','x','y','w','h','rot','opacity'].forEach(k=>$(k).value=it[k]??'');
+ $('textGroup').style.display=it.type==='text'||it.type==='button'||it.type==='box'?'block':'none';
+ $('shapeGroup').style.display=it.type==='box'||it.type==='button'?'block':'none';
+ $('buttonGroup').style.display=it.type==='button'?'block':'none';
+ if(it.type==='text'||it.type==='button'||it.type==='box'){ $('text').value=it.text||'';$('font').value=it.font||'Tahoma';$('fontSize').value=it.fontSize||24;$('textColor').value=it.color||'#111827';$('weight').value=it.weight||700;$('align').value=it.align||'center'}
+ if(it.type==='box'||it.type==='button'){$('fill').value=it.fill||'#fff';$('stroke').value=it.stroke||'#111827';$('strokeW').value=it.strokeW??2;$('radius').value=it.radius??0}
+ if(it.type==='button'){$('buttonText').value=it.text||'';$('action').value=it.action||'url';$('target').value=it.target||'';$('newTab').value=it.newTab||'blank';$('scrollTarget').value=it.scrollTarget||'';toggleAction()}
+}
+function bind(id,key){
+  $(id).addEventListener('input',()=>{
+    const it=S.items.find(x=>x.id===S.selected);
+    if(!it)return;
+    let v=$(id).value;
+    if(['x','y','w','h','rot','opacity','fontSize','strokeW','radius','weight'].includes(key))v=v===''?0:+v;
+    it[key]=v;
+    // Update only the selected canvas element. Re-rendering the whole editor here
+    // destroys the active input, which caused focus/selection to jump while typing.
+    updateElement(it);
+    if(key==='name') renderLayers();
+  })
+}
+function updateElement(it){
+  const el=page.querySelector(`[data-id="${it.id}"]`);
+  if(!el)return;
+  Object.assign(el.style,{left:(it.x||0)+'px',top:(it.y||0)+'px',width:Math.max(1,it.w||1)+'px',height:Math.max(1,it.h||1)+'px',opacity:it.opacity??1,transform:`rotate(${it.rot||0}deg)`});
+  el.className='element '+(it.type==='text'?'text-el':it.type==='image'?'image-el':it.type==='button'?'button-el':'box-el')+(it.id===S.selected?' selected':'');
+  if(it.type==='text'){
+    const rh=el.querySelector('.resize');
+    const guide=el.querySelector('.element-guide');
+    [...el.childNodes].forEach(n=>{if(n!==rh&&n!==guide)el.removeChild(n)});
+    el.insertBefore(document.createTextNode(it.text??''),guide||rh||null);
+    Object.assign(el.style,{fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||400,color:it.color||'#111827',textAlign:it.align||'center',lineHeight:'1.25'});
+  }else if(it.type==='button'){
+    // Preserve the resize handle while updating the button label.
+    const rh=el.querySelector('.resize');
+    const guide=el.querySelector('.element-guide');
+    [...el.childNodes].forEach(n=>{if(n!==rh&&n!==guide)el.removeChild(n)});
+    el.insertBefore(document.createTextNode(it.text??''),guide||rh||null);
+    Object.assign(el.style,{display:'flex',alignItems:'center',justifyContent:'center',textAlign:'center',background:it.fill||'#f59e0b',color:it.color||'#111827',fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||700,border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'});
+  }else if(it.type==='box'){
+    el.textContent=it.text||'';
+    Object.assign(el.style,{display:'flex',alignItems:'center',justifyContent:'center',whiteSpace:'pre-wrap',overflow:'hidden',fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||700,color:it.color||'#111827',textAlign:it.align||'center',lineHeight:'1.25',background:it.fill||'#fff',border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'});
+  }
+}
+['name','x','y','w','h','rot','opacity','text','font','fontSize','textColor','weight','align','fill','stroke','strokeW','radius','buttonText','action','target','newTab','scrollTarget'].forEach(id=>{
+ const key=id==='textColor'?'color':id==='buttonText'?'text':id;
+ if($(id))bind(id,key)
+});
+$('action').addEventListener('change',toggleAction);
+function toggleAction(){
+  const a=$('action').value;
+  $('scrollWrap').style.display=a==='scroll'?'block':'none';
+  $('targetWrap').style.display=(a==='scroll'||a==='none')?'none':'block';
+  $('target').disabled=(a==='none'||a==='scroll');
+  $('target').placeholder = a==='channel' ? '@AnimalRush_MM یا لینک کامل کانال' :
+                            a==='telegram' ? '@channel یا لینک کامل تلگرام' :
+                            a==='call' ? 'مثلاً 09120000000' :
+                            a==='email' ? 'مثلاً name@example.com' : 'https://example.com';
+}
+function runAction(it){
+ if(it.action==='none')return;
+ if(it.action==='scroll'){document.getElementById(it.scrollTarget)?.scrollIntoView({behavior:'smooth'});return}
+ let target=it.target||'';
+ if(it.action==='channel'||it.action==='rubika') target=target.startsWith('http')?target:'https://rubika.ir/'+target.replace(/^@/,'');
+ if(it.action==='telegram') target=target.startsWith('http')?target:'https://t.me/'+target.replace(/^@/,'');
+ if(it.action==='call')target='tel:'+target.replace(/\s/g,'');
+ if(it.action==='email')target='mailto:'+target;
+ if(target)window.open(target,it.newTab==='blank'?'_blank':'_self')
+}
+$('delete').onclick=()=>{if(!S.selected)return;commit();S.items=S.items.filter(x=>x.id!==S.selected);S.selected=S.items.length?S.items[S.items.length-1].id:null;render()};
+$('dup').onclick=()=>{const it=S.items.find(x=>x.id===S.selected);if(!it)return;commit();const n=copy(it);n.id=uid();n.x+=15;n.y+=15;S.items.push(n);S.selected=n.id;render()};
+function layerMove(d){const i=S.items.findIndex(x=>x.id===S.selected),j=i+d;if(i<0||j<0||j>=S.items.length)return;commit();[S.items[i],S.items[j]]=[S.items[j],S.items[i]];render()}
+$('up').onclick=()=>layerMove(1);$('down').onclick=()=>layerMove(-1);
+$('bg').addEventListener('input',()=>{S.bg=$('bg').value;page.style.background=S.bg});
+$('applyPage').onclick=()=>{commit();S.bg=$('bg').value||'#ffffff';S.h=Math.max(400,+$('pageH').value||900);render();msg('تنظیمات صفحه اعمال شد')};
+$('whiteBg').onclick=()=>{commit();S.bg='#ffffff';$('bg').value='#ffffff';render();msg('پس‌زمینه سفید شد')};
+document.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{const [w,h]=b.dataset.size.split('x');S.w=+w;S.h=+h;$('pageH').value=h;render()});
+document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add));
+$('new').onclick=()=>{if(confirm('پروژه پاک شود؟')){commit();S={w:390,h:900,bg:'#ffffff',items:[],selected:null};render()}};
+$('save').onclick=()=>{const clean=copy(S);download(new Blob([JSON.stringify(clean,null,2)],{type:'application/json'}),'mm-mobile-project.json');msg('پروژه ذخیره شد')};
+$('open').onclick=()=>{file.accept='.json';file.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{commit();S=JSON.parse(await f.text());render();msg('پروژه باز شد')}catch{alert('فایل پروژه معتبر نیست')}file.value=''};file.click()};
+$('export').onclick=()=>exportHTML(false);$('preview').onclick=()=>exportHTML(true);
+function exportHTML(preview){
+ const builtInChannel = `<a href="https://rubika.ir/AnimalRush_MM" target="_blank" rel="noopener" style="position:absolute;left:10px;top:10px;z-index:9999;display:flex;align-items:center;justify-content:center;min-width:145px;height:42px;padding:0 12px;background:#2563eb;color:#fff;text-decoration:none;border-radius:10px;font-family:Tahoma,Arial,sans-serif;font-size:13px;font-weight:700;box-shadow:0 3px 10px #0003">کانال اصلی روبیکا</a>`;
+ const body=S.items.map(it=>{
+  let style=`position:absolute;left:${it.x}px;top:${it.y}px;width:${it.w}px;height:${it.h}px;opacity:${it.opacity??1};transform:rotate(${it.rot||0}deg);box-sizing:border-box;`;
+  let inner='';
+  if(it.type==='text')style+=`font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};color:${it.color};text-align:${it.align};white-space:pre-wrap;overflow:hidden;line-height:1.25;`;inner=esc(it.text||'');
+  if(it.type==='box'){style+=`display:flex;align-items:center;justify-content:center;white-space:pre-wrap;overflow:hidden;font-family:${it.font||'Tahoma'};font-size:${it.fontSize||24}px;font-weight:${it.weight||700};color:${it.color||'#111827'};text-align:${it.align||'center'};line-height:1.25;background:${it.fill||'#fff'};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'')}
+  if(it.type==='image')inner=`<img src="${it.src}" style="width:100%;height:100%;object-fit:contain">`;
+  if(it.type==='button'){style+=`display:flex;align-items:center;justify-content:center;text-align:center;background:${it.fill};color:${it.color};font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'دکمه');let fn=actionJS(it);return `<div style="${style};cursor:pointer" onclick="${fn}">${inner}</div>`}
+  return `<div style="${style}">${inner}</div>`
+ }).join('');
+ const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحه MM</title></head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
+ if(preview){const w=window.open();w.document.write(out);w.document.close()}else download(new Blob([out],{type:'text/html;charset=utf-8'}),'mm-mobile-page.html')
+}
+function actionJS(it){
+ if(it.action==='none')return '';
+ if(it.action==='scroll')return `document.getElementById(${JSON.stringify(it.scrollTarget||'')})?.scrollIntoView({behavior:'smooth'})`;
+ let t=it.target||'';if(it.action==='channel'||it.action==='rubika')t=t.startsWith('http')?t:'https://rubika.ir/'+t.replace(/^@/,'');if(it.action==='telegram')t=t.startsWith('http')?t:'https://t.me/'+t.replace(/^@/,'');if(it.action==='call')t='tel:'+t;if(it.action==='email')t='mailto:'+t;
+ return `window.open(${JSON.stringify(t)},${JSON.stringify(it.newTab==='blank'?'_blank':'_self')})`
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function msg(t){$('status').textContent=t;clearTimeout(msg.t);msg.t=setTimeout(()=>$('status').textContent='',2000)}
+window.addEventListener('keydown',e=>{
+ const active=document.activeElement;
+ const typing=active && (active.matches('input, textarea, select') || active.isContentEditable);
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!typing){e.preventDefault();undo()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'&&!typing){e.preventDefault();redo()}
+ // Delete a selected canvas element only when focus is not inside an editor field.
+ // Mobile keyboards can emit the Delete key while clearing the button-text input.
+ if(e.key==='Delete'&&!typing){$('delete').click()}
+});
+render();
+</script>
+</body>
+</html>
