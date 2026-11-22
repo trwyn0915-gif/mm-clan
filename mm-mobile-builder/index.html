@@ -57,7 +57,7 @@ textarea{min-height:70px;resize:vertical}
 .game-progress{background:#e2e8f0;border:2px solid #475569;border-radius:20px;overflow:hidden}
 .game-progress i{display:block;height:100%;width:65%;background:linear-gradient(90deg,#22c55e,#86efac)}
 .game-loading{background:#0f172a;color:#f8fafc;border-radius:12px;gap:8px}
-.game-loading i{width:22px;height:22px;border:3px solid #64748b;border-top-color:#fbbf24;border-radius:50%;animation:mmSpin .8s linear infinite}
+.game-loading i{width:22px;height:22px;border:3px solid #64748b;border-top-color:#fbbf24;border-radius:50%;animation:mm_spin .8s linear infinite}
 .mm-anim-float{animation:mmFloat 2.4s ease-in-out infinite}
 .mm-anim-pulse{animation:mmPulse 1.4s ease-in-out infinite}
 .mm-anim-spin{animation:mmSpin 2s linear infinite}
@@ -235,7 +235,7 @@ try{
  if(saved&&Array.isArray(saved.items)&&Number.isFinite(+saved.w)&&Number.isFinite(+saved.h)){
   S={w:Math.max(1,+saved.w),h:Math.max(1,+saved.h),bg:typeof saved.bg==='string'?saved.bg:'#ffffff',
      items:saved.items.filter(it=>it&&typeof it.id==='string'&&['text','box','button','image','player','platform','coin','enemy','progress','loading','audio'].includes(it.type)),
-     selected:typeof saved.selected==='string'?saved.selected:null};
+     selected:typeof saved.selected==='string'?saved.selected:null,scenes:Array.isArray(saved.scenes)?saved.scenes:[],activeScene:typeof saved.activeScene==='string'?saved.activeScene:null};
   if(!S.items.some(it=>it.id===S.selected))S.selected=null;
  }
 }catch(error){}
@@ -329,6 +329,7 @@ function loadImage(e){
  const reader=new FileReader();reader.onload=()=>{commit();const im=new Image();im.onload=()=>{let ratio=Math.min(300/im.width,180/im.height,1);let n={id:uid(),type:'image',name:'تصویر',x:40,y:50,w:im.width*ratio,h:im.height*ratio,opacity:1,rot:0,src:reader.result};S.items.push(n);S.selected=n.id;render()};im.src=reader.result};reader.readAsDataURL(f);file.value=''
 }
 function render(){
+ ensureScenes();
  page.style.width=S.w+'px';page.style.height=S.h+'px';page.style.background=S.bg;
  page.innerHTML='';renderSceneControls();
  // Built-in channel button: always attached to the page itself.
@@ -548,7 +549,7 @@ function exportHTML(preview){
  const runtime=`<style>@keyframes mm_float{50%{translate:0 -12px}}@keyframes mm_pulse{50%{scale:1.08}}@keyframes mm_spin{to{transform:rotate(360deg)}}@keyframes mm_bounce{50%{translate:0 -10px}}@keyframes mm_fade{50%{opacity:.25}}</style><script>
 let score=0;document.querySelectorAll('[data-game="coin"]').forEach(c=>c.addEventListener('click',()=>{c.remove();score++;document.querySelectorAll('[data-score]').forEach(x=>x.textContent=score)}));
 const player=document.querySelector('[data-game="player"]');if(player){let x=parseFloat(player.style.left)||0,y=parseFloat(player.style.top)||0;const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});function move(){if(keys.arrowleft||keys.a)x-=3;if(keys.arrowright||keys.d)x+=3;if(keys.arrowup||keys.w)y-=3;if(keys.arrowdown||keys.s)y+=3;x=Math.max(0,Math.min(${S.w}-player.offsetWidth,x));y=Math.max(0,Math.min(${S.h}-player.offsetHeight,y));player.style.left=x+'px';player.style.top=y+'px';requestAnimationFrame(move)}move()}
-</script>`;
+<\/script>`;
  const bodyGame=body.replace(/<div style="([^"]*)">([^<]*)<\\/div>/g,(m,st,tx)=>m);
  const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بازی ساخته‌شده با MM</title>${runtime}</head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
  if(preview){const w=window.open();w.document.write(out);w.document.close()}else download(new Blob([out],{type:'text/html;charset=utf-8'}),'mm-mobile-page.html')
