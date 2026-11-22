@@ -81,6 +81,8 @@ body.mobile-access-blocked #mobileAccessBlock{
 <header class="top">
   <b class="brand">MM Mobile Builder</b>
   <button id="new">جدید</button>
+  <button id="undoBtn" type="button" title="واگرد (Ctrl+Z)">واگرد</button>
+  <button id="redoBtn" type="button" title="انجام دوباره (Ctrl+Y)">انجام دوباره</button>
   <button id="save">ذخیره پروژه</button>
   <button id="open">باز کردن</button>
   <button id="export">خروجی HTML</button>
@@ -192,11 +194,39 @@ let S={w:390,h:900,bg:'#ffffff',items:[],selected:null}, hist=[],future=[], drag
 const $=id=>document.getElementById(id);
 const copy=o=>JSON.parse(JSON.stringify(o));
 const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const AUTOSAVE_KEY='mm-mobile-builder-autosave-v2';
+let autosaveTimer=null;
+try{
+ const saved=JSON.parse(localStorage.getItem(AUTOSAVE_KEY)||'null');
+ if(saved&&Array.isArray(saved.items)&&Number.isFinite(+saved.w)&&Number.isFinite(+saved.h)){
+  S={w:Math.max(1,+saved.w),h:Math.max(1,+saved.h),bg:typeof saved.bg==='string'?saved.bg:'#ffffff',
+     items:saved.items.filter(it=>it&&typeof it.id==='string'&&['text','box','button','image'].includes(it.type)),
+     selected:typeof saved.selected==='string'?saved.selected:null};
+  if(!S.items.some(it=>it.id===S.selected))S.selected=null;
+ }
+}catch(error){}
 
+function scheduleAutosave(){
+ clearTimeout(autosaveTimer);
+ autosaveTimer=setTimeout(()=>{
+  try{
+   localStorage.setItem(AUTOSAVE_KEY,JSON.stringify(S));
+   $('status').textContent='ذخیره خودکار انجام شد';
+  }catch(error){
+   $('status').textContent='ذخیره خودکار ممکن نشد؛ از «ذخیره پروژه» استفاده کن';
+  }
+ },350);
+}
+function syncHistoryButtons(){
+ $('undoBtn').disabled=hist.length===0;
+ $('redoBtn').disabled=future.length===0;
+}
 function snap(){return copy(S)}
-function commit(){hist.push(snap());if(hist.length>80)hist.shift();future=[]}
+function commit(){hist.push(snap());if(hist.length>80)hist.shift();future=[];syncHistoryButtons()}
 function undo(){if(!hist.length)return;future.push(snap());S=hist.pop();render()}
 function redo(){if(!future.length)return;hist.push(snap());S=future.pop();render()}
+$('undoBtn').onclick=undo;
+$('redoBtn').onclick=redo;
 
 function add(type){
  commit();
@@ -246,21 +276,30 @@ function render(){
   el.addEventListener('pointerdown',e=>startDrag(e,it,rh));
   page.appendChild(el)
  });
- renderLayers();renderProps()
+ renderLayers();renderProps();syncHistoryButtons();scheduleAutosave()
 }
 function startDrag(e,it,rh){
- e.stopPropagation();S.selected=it.id;
+ e.stopPropagation();
+ const element=e.currentTarget;
+ S.selected=it.id;
+ page.querySelectorAll('.element').forEach(node=>node.classList.toggle('selected',node===element));
+ renderLayers();renderProps();
  const r=page.getBoundingClientRect(),sx=e.clientX-r.left,sy=e.clientY-r.top;
- drag={it,startX:sx,startY:sy,ox:it.x,oy:it.y,ow:it.w,oh:it.h,resize:e.target===rh};commit();
- e.currentTarget.setPointerCapture(e.pointerId)
+ drag={it,startX:sx,startY:sy,ox:it.x,oy:it.y,ow:it.w,oh:it.h,resize:e.target===rh};
+ commit();
+ element.setPointerCapture(e.pointerId);
 }
 page.addEventListener('pointermove',e=>{
- if(!drag)return;const r=page.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dx=x-drag.startX,dy=y-drag.startY,it=drag.it;
+ if(!drag)return;
+ const r=page.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,dx=x-drag.startX,dy=y-drag.startY,it=drag.it;
  if(drag.resize){it.w=Math.max(10,drag.ow+dx);it.h=Math.max(10,drag.oh+dy)}
  else{it.x=Math.max(0,Math.min(S.w-it.w,drag.ox+dx));it.y=Math.max(0,Math.min(S.h-it.h,drag.oy+dy))}
- render()
+ // Update the existing element in place so pointer capture remains active.
+ updateElement(it);
+ $('x').value=it.x;$('y').value=it.y;$('w').value=it.w;$('h').value=it.h;
 });
-page.addEventListener('pointerup',()=>drag=null);
+page.addEventListener('pointerup',()=>{if(drag){drag=null;scheduleAutosave()}});
+page.addEventListener('pointercancel',()=>{if(drag){drag=null;scheduleAutosave()}});
 page.addEventListener('pointerdown',e=>{if(e.target===page){S.selected=null;render()}});
 function renderLayers(){
  const box=$('layers');box.innerHTML='';
@@ -332,6 +371,7 @@ function updateElement(it){
     el.textContent=it.text||'';
     Object.assign(el.style,{display:'flex',alignItems:'center',justifyContent:'center',whiteSpace:'pre-wrap',overflow:'hidden',fontFamily:it.font||'Tahoma',fontSize:(it.fontSize||24)+'px',fontWeight:it.weight||700,color:it.color||'#111827',textAlign:it.align||'center',lineHeight:'1.25',background:it.fill||'#fff',border:`${it.strokeW||0}px solid ${it.stroke||'transparent'}`,borderRadius:(it.radius||0)+'px'});
   }
+  scheduleAutosave();
 }
 ['name','x','y','w','h','rot','opacity','text','font','fontSize','textColor','weight','align','fill','stroke','strokeW','radius','buttonText','action','target','newTab','scrollTarget'].forEach(id=>{
  const key=id==='textColor'?'color':id==='buttonText'?'text':id;
@@ -379,7 +419,7 @@ function exportHTML(preview){
   if(it.type==='text')style+=`font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};color:${it.color};text-align:${it.align};white-space:pre-wrap;overflow:hidden;line-height:1.25;`;inner=esc(it.text||'');
   if(it.type==='box'){style+=`display:flex;align-items:center;justify-content:center;white-space:pre-wrap;overflow:hidden;font-family:${it.font||'Tahoma'};font-size:${it.fontSize||24}px;font-weight:${it.weight||700};color:${it.color||'#111827'};text-align:${it.align||'center'};line-height:1.25;background:${it.fill||'#fff'};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'')}
   if(it.type==='image')inner=`<img src="${it.src}" style="width:100%;height:100%;object-fit:contain">`;
-  if(it.type==='button'){style+=`display:flex;align-items:center;justify-content:center;text-align:center;background:${it.fill};color:${it.color};font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'دکمه');let fn=actionJS(it);return `<div style="${style};cursor:pointer" onclick="${fn}">${inner}</div>`}
+  if(it.type==='button'){style+=`display:flex;align-items:center;justify-content:center;text-align:center;background:${it.fill};color:${it.color};font-family:${it.font};font-size:${it.fontSize}px;font-weight:${it.weight};border:${it.strokeW||0}px solid ${it.stroke||'transparent'};border-radius:${it.radius||0}px;`;inner=esc(it.text||'دکمه');let fn=actionJS(it);return `<div style="${style};cursor:pointer" onclick="${escAttr(fn)}">${inner}</div>`}
   return `<div style="${style}">${inner}</div>`
  }).join('');
  const out=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>صفحه MM</title></head><body style="margin:0;background:${S.bg};"><main style="position:relative;width:${S.w}px;min-height:${S.h}px;background:${S.bg};margin:0 auto;overflow:hidden">${builtInChannel}${body}</main></body></html>`;
@@ -392,6 +432,7 @@ function actionJS(it){
  return `window.open(${JSON.stringify(t)},${JSON.stringify(it.newTab==='blank'?'_blank':'_self')})`
 }
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function msg(t){$('status').textContent=t;clearTimeout(msg.t);msg.t=setTimeout(()=>$('status').textContent='',2000)}
 window.addEventListener('keydown',e=>{
@@ -399,6 +440,8 @@ window.addEventListener('keydown',e=>{
  const typing=active && (active.matches('input, textarea, select') || active.isContentEditable);
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!typing){e.preventDefault();undo()}
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'&&!typing){e.preventDefault();redo()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'&&!typing){e.preventDefault();$('save').click()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'&&!typing){e.preventDefault();$('dup').click()}
  // Delete a selected canvas element only when focus is not inside an editor field.
  // Mobile keyboards can emit the Delete key while clearing the button-text input.
  if(e.key==='Delete'&&!typing){$('delete').click()}
