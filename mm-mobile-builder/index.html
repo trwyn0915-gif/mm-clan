@@ -225,7 +225,35 @@ const mmIsMobileDevice = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent)
 if (mmIsMobileDevice) document.body.classList.add('mobile-access-blocked');
 const page=document.getElementById('page'), phone=document.getElementById('phone'), file=document.getElementById('file');
 let S={w:390,h:900,bg:'#ffffff',items:[],selected:null,scenes:[],activeScene:null}, hist=[],future=[], drag=null;
+
 const $=id=>document.getElementById(id);
+function showMMError(error){
+ const status=document.getElementById('status');
+ const detail=error&&error.message?error.message:String(error||'خطای نامشخص');
+ if(status)status.textContent='خطای اجرای برنامه: '+detail;
+ console.error('MM Builder runtime error:',error);
+}
+window.addEventListener('error',e=>showMMError(e.error||e.message));
+window.addEventListener('unhandledrejection',e=>showMMError(e.reason));
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');
+ if(!b || b.hasAttribute('data-add') || b.onclick)return;
+ const actions={
+  new:()=>{if(confirm('پروژه پاک شود؟')){commit();S={w:390,h:900,bg:'#ffffff',items:[],selected:null};render()}},
+  undoBtn:undo,redoBtn:redo,
+  save:()=>download(new Blob([JSON.stringify(copy(S),null,2)],{type:'application/json'}),'mm-mobile-project.json'),
+  open:()=>{file.accept='.json';file.onchange=async ev=>{const f=ev.target.files[0];if(!f)return;try{commit();S=JSON.parse(await f.text());render();msg('پروژه باز شد')}catch(err){alert('فایل پروژه معتبر نیست');showMMError(err)}file.value=''};file.click()},
+  export:()=>exportHTML(false),preview:()=>exportHTML(true),
+  addScene,duplicateScene,deleteScene,
+  applyPage:()=>{commit();S.bg=$('bg').value||'#ffffff';S.h=Math.max(400,+$('pageH').value||900);render();msg('تنظیمات صفحه اعمال شد')},
+  whiteBg:()=>{commit();S.bg='#ffffff';$('bg').value='#ffffff';render();msg('پس‌زمینه سفید شد')},
+  up:()=>layerMove(1),down:()=>layerMove(-1),
+  delete:()=>{if(S.selected){commit();S.items=S.items.filter(x=>x.id!==S.selected);S.selected=S.items.length?S.items[S.items.length-1].id:null;render()}}
+ };
+ const run=actions[b.id];
+ if(run){e.preventDefault();try{run()}catch(error){showMMError(error)}}
+},false);
+
 
 // Reliable delegated handler for every Add-panel control. It is registered
 // before editor initialization so an unrelated startup/render issue cannot
