@@ -47,9 +47,36 @@ textarea{min-height:70px;resize:vertical}
 #file{display:none}
 @media(max-width:1000px){.main{grid-template-columns:200px 1fr}.right{display:none}}
 @media(max-width:650px){.main{grid-template-columns:1fr}.left{display:none}.workspace{padding:15px}.phone{transform-origin:top center}}
+
+/* Desktop-only access notice: blocks the builder on phones inside the page UI. */
+#mobileAccessBlock{display:none}
+body.mobile-access-blocked{overflow:hidden!important}
+body.mobile-access-blocked .app{display:none!important}
+body.mobile-access-blocked #mobileAccessBlock{
+  position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:radial-gradient(circle at top,#1e3a5f 0,#0f172a 62%);
+  color:#f8fafc;text-align:center;font-family:Tahoma,Arial,sans-serif
+}
+#mobileAccessBlock .access-card{width:min(100%,430px);padding:30px 22px;border:1px solid #475569;
+  border-radius:24px;background:#172033;box-shadow:0 24px 70px #0008}
+#mobileAccessBlock .access-icon{width:64px;height:64px;margin:0 auto 18px;border-radius:19px;
+  display:grid;place-items:center;background:#263b55;color:#fbbf24}
+#mobileAccessBlock .access-icon svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#mobileAccessBlock h1{margin:0 0 12px;font-size:22px;font-weight:900}
+#mobileAccessBlock p{margin:0;color:#d5deea;font-size:15px;line-height:2;font-weight:700}
+#mobileAccessBlock .access-caption{display:block;margin-top:18px;color:#94a3b8;font-size:12px;line-height:1.8}
+
 </style>
 </head>
 <body>
+<div id="mobileAccessBlock" role="alert" aria-live="polite">
+  <section class="access-card">
+    <div class="access-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4M7 8h10"/></svg></div>
+    <h1>ورود با موبایل امکان‌پذیر نیست</h1>
+    <p>بخش «برنامه‌نویسی (فارسی)» فقط با کامپیوتر قابل استفاده است. لطفاً این صفحه را با کامپیوتر باز کنید.</p>
+    <span class="access-caption">این محدودیت برای نمایش درست ابزار و امکانات ویرایشگر در نظر گرفته شده است.</span>
+  </section>
+</div>
 <div class="app">
 <header class="top">
   <b class="brand">MM Mobile Builder</b>
@@ -158,6 +185,8 @@ textarea{min-height:70px;resize:vertical}
 <input id="file" type="file" accept=".json,image/*">
 
 <script>
+const mmIsMobileDevice = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent);
+if (mmIsMobileDevice) document.body.classList.add('mobile-access-blocked');
 const page=document.getElementById('page'), phone=document.getElementById('phone'), file=document.getElementById('file');
 let S={w:390,h:900,bg:'#ffffff',items:[],selected:null}, hist=[],future=[], drag=null;
 const $=id=>document.getElementById(id);
